@@ -1,0 +1,145 @@
+---
+title: "Supervised ML in clinical applications"
+subtitle: "EXMD 601, McGill University"
+author: "Alton Russell"
+date: "20 March 2023"
+format: revealjs
+editor: visual
+---
+
+## Packages
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+```
+
+## Agenda
+
+-   **Types of machine learning**
+-   Model development and selection
+-   Generalization and calibration
+-   Clinically useful models
+
+## Machine learning in a nutshell
+
+## Regression
+
+## "Classification" or risk prediction
+
+## Dichotomania
+
+## Computer vision
+
+## Language models
+
+## Our example data[^1]
+
+[^1]: Dataset: [Fetal Health Classigication on Kaggle](https://www.kaggle.com/datasets/andrewmvd/fetal-health-classification). Images: [Thinkstock](https://www.babycenter.in/x1045384/what-is-cardiotocography-ctg-and-why-do-i-need-it); [geekymedics.com](https://geekymedics.com/how-to-read-a-ctg/)
+
+Tabular data derived from **cardiotocograms (CTGs)** from 2126 pregnant patients.
+
+21 characteristics classified as normal, suspect, or pathological.
+
+::: columns
+::: {.column width="50%"}
+![](CTG_device.jpeg)
+:::
+
+::: {.column width="50%"}
+![](CTG_output.jpeg)
+:::
+:::
+
+## Our example data
+
+```{r}
+#| echo: true
+
+dt <- read_csv("fetal_health.csv")
+head(dt, 4)
+```
+
+## Agenda
+
+-   Types of ML for clinical application
+-   **Model development and selection**
+-   Generalization and calibration
+-   Considering clinical utility
+
+## Overfitting on training data
+
+![](tuning-overfitting-train.svg)
+
+<https://workshops.tidymodels.org/>
+
+## Overfit model on test data
+
+![](tuning-overfitting-test.svg)
+
+## Data splitting
+
+## Cross validation
+
+![](three-CV.svg)
+
+## Cross validation
+
+![](three-CV-iter.svg)
+
+## Cross validation
+
+```{r}
+vfold_cv(frog_train) # v = 10 is default
+frog_folds$splits[1:3]
+vfold_cv(frog_train, v = 5)
+vfold_cv(frog_train, strata = latency)
+```
+
+## Splitting with rsample
+
+```{r}
+#| echo: true
+set.seed(123) #for reproducibility
+ctg_split <- initial_split(dt, prop = 0.8)
+ctg_split
+```
+
+## Training set
+
+```{r}
+#| echo: true
+training(ctg_split)
+```
+
+## Testing set
+
+```{r}
+#| echo: true
+testing(ctg_split)
+```
+
+## Stratification
+
+```{r}
+#| echo: true
+set.seed(123) #for reproducibility
+ctg_split_strat <- initial_split(dt, prop = 0.8 ,strata = fetal_health)
+ctg_split_strat
+```
+
+## Metrics
+
+## Random forest model
+
+-   Ensemble (combine) many decision trees
+
+-   Trees 'vote'
+
+-   
+
+## Hyperparameter tuning
+
+## Grid search
+
+## Calibration
