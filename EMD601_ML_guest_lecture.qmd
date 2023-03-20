@@ -140,7 +140,7 @@ theme_set(theme_bw())
 
 [^1]: Dataset: [Fetal health classification on Kaggle](https://www.kaggle.com/datasets/andrewmvd/fetal-health-classification). Images: [Thinkstock](https://www.babycenter.in/x1045384/what-is-cardiotocography-ctg-and-why-do-i-need-it); [geekymedics.com](https://geekymedics.com/how-to-read-a-ctg/)
 
-Tabular data derived from **cardiotocograms (CTGs)** from 2126 pregnant patients.
+Tabular data derived from **cardiotocography (CTGs)** from 2126 pregnant patients.
 
 Outcome: fetal health is normal vs. suspect, or pathological.
 
@@ -307,20 +307,20 @@ Often don't want to dichotomize in model selection for clinical prediction tasks
 ## Area under the ROC curve
 
 ::: columns
-::: {.column width="65%"}
+::: {.column width="60%"}
 Measure of **discrimination**: Higher if the examples with a positive outcome were assigned a hgiher risk score
 
 -   -,-,-,-,-,+,+,+,+ $\rightarrow$ AUC=1 (perfectly discriminated +'s from -'s)
 
 -   -,+,-,+,-,+,-,+,-,+ $\rightarrow$ AUC = 0.5 (random chance)
-
-Does not measure **calibration** (how closely the predicted probabilities match actual risk)
 :::
 
-::: {.column width="35%"}
+::: {.column width="40%"}
 ![](ROC_curve.png)
 :::
 :::
+
+Does not measure **calibration** (how closely the predicted probabilities match actual risk)
 
 ## Performance in train, test, validate data
 
@@ -346,7 +346,7 @@ Does not measure **calibration** (how closely the predicted probabilities match 
 
 -   Covariates used for branching each tree also random
 
--   Trees 'votes' are counted to estimate probability of outcome
+-   Trees' 'votes' are counted to estimate probability of outcome
 
 ## Decision tree example
 
@@ -358,7 +358,7 @@ Does not measure **calibration** (how closely the predicted probabilities match 
 
 ![](rand_forest_parsnip.png)
 
-## Random forest hyperparameters
+## Random forest arguments
 
 ![](parsnip_RF_arguments.png)
 
@@ -466,6 +466,8 @@ head(roc, 5)
 ::: {.column width="50%"}
 ```{r}
 #| echo: false
+#| fig-width: 5
+#| fig-height: 5
 autoplot(roc)
 ```
 :::

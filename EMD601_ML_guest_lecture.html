@@ -525,7 +525,7 @@ Alton Russell
 </section>
 <section id="our-example-data1" class="slide level2">
 <h2>Our example data<sup>1</sup></h2>
-<p>Tabular data derived from <strong>cardiotocograms (CTGs)</strong> from 2126 pregnant patients.</p>
+<p>Tabular data derived from <strong>cardiotocography (CTGs)</strong> from 2126 pregnant patients.</p>
 <p>Outcome: fetal health is normal vs.&nbsp;suspect, or pathological.</p>
 <div class="columns">
 <div class="column" style="width:50%;">
@@ -728,17 +728,17 @@ Alton Russell
 <section id="area-under-the-roc-curve" class="slide level2">
 <h2>Area under the ROC curve</h2>
 <div class="columns">
-<div class="column" style="width:65%;">
+<div class="column" style="width:60%;">
 <p>Measure of <strong>discrimination</strong>: Higher if the examples with a positive outcome were assigned a hgiher risk score</p>
 <ul>
 <li><p>-,-,-,-,-,+,+,+,+ <span class="math inline">\(\rightarrow\)</span> AUC=1 (perfectly discriminated +’s from -’s)</p></li>
 <li><p>-,+,-,+,-,+,-,+,-,+ <span class="math inline">\(\rightarrow\)</span> AUC = 0.5 (random chance)</p></li>
 </ul>
-<p>Does not measure <strong>calibration</strong> (how closely the predicted probabilities match actual risk)</p>
-</div><div class="column" style="width:35%;">
+</div><div class="column" style="width:40%;">
 <p><img data-src="ROC_curve.png"></p>
 </div>
 </div>
+<p>Does not measure <strong>calibration</strong> (how closely the predicted probabilities match actual risk)</p>
 </section>
 <section id="performance-in-train-test-validate-data" class="slide level2">
 <h2>Performance in train, test, validate data</h2>
@@ -764,7 +764,7 @@ Alton Russell
 <li><p>Ensembles (combines) many decision trees</p></li>
 <li><p>Uses bootstrap resampling to randomly select which training examples are used in each tree</p></li>
 <li><p>Covariates used for branching each tree also random</p></li>
-<li><p>Trees ‘votes’ are counted to estimate probability of outcome</p></li>
+<li><p>Trees’ ‘votes’ are counted to estimate probability of outcome</p></li>
 </ul>
 </section>
 <section id="decision-tree-example" class="slide level2">
@@ -776,8 +776,8 @@ Alton Russell
 <h2>Random forest in tidymodels</h2>
 
 <img data-src="rand_forest_parsnip.png" class="r-stretch"></section>
-<section id="random-forest-hyperparameters" class="slide level2">
-<h2>Random forest hyperparameters</h2>
+<section id="random-forest-arguments" class="slide level2">
+<h2>Random forest arguments</h2>
 
 <img data-src="parsnip_RF_arguments.png" class="r-stretch"></section>
 <section id="tuning-random-forest-model" class="slide level2">
@@ -931,7 +931,7 @@ Computational engine: ranger </code></pre>
 </div><div class="column" style="width:50%;">
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="EMD601_ML_guest_lecture_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></p>
+<p><img data-src="EMD601_ML_guest_lecture_files/figure-revealjs/unnamed-chunk-13-1.png" width="480"></p>
 </div>
 </div>
 </div>
