@@ -507,4 +507,4 @@ rf_test_results |>
 
 ## Switching to Powerpoint
 
-Link here
+<https://github.com/altonrus/EMD601_ML_guest_lecture/blob/master/clinically_useful_ML_prediction.pptx>
