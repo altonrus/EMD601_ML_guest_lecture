@@ -199,6 +199,7 @@ table(testing(ctg_split)$fetal_health)/nrow(testing(ctg_split))
 #| echo: true
 
 #Split while stratifying on outcome
+set.seed(456)
 ctg_split_strat <- initial_split(dt, prop = 0.8 ,strata = fetal_health)
 
 #Distribution of outcome in train and test sets
@@ -246,7 +247,7 @@ Randomly assign each row of data to a 'fold'
 
 ```{r}
 #| echo: true
-
+set.seed(456)
 ctg_folds <- vfold_cv(training(ctg_split_strat), 
          v=3, #three folds
          strata = fetal_health, #stratified on outcome
@@ -385,8 +386,8 @@ rf_tune_spec
 #| echo: true
 #Create grid of hyperparameters for tuning
 rf_grid <- grid_regular(
-  mtry(range = c(1, 10)),#number of predictors sampled at each split of tree
-  min_n(range = c(2, 11)),#Minimum datapoints in node for further split
+  mtry(range = c(5, 15)),#number of predictors sampled at each split of tree
+  min_n(range = c(2, 8)),#Minimum datapoints in node for further split
   levels = 3
 )
 rf_grid

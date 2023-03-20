@@ -611,10 +611,11 @@ Alton Russell
 <h2>Stratified split</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">#Split while stratifying on outcome</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a>ctg_split_strat <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(dt, <span class="at">prop =</span> <span class="fl">0.8</span> ,<span class="at">strata =</span> fetal_health)</span>
-<span id="cb10-3"><a href="#cb10-3"></a></span>
-<span id="cb10-4"><a href="#cb10-4"></a><span class="co">#Distribution of outcome in train and test sets</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="fu">table</span>(<span class="fu">training</span>(ctg_split_strat)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">training</span>(ctg_split_strat))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
+<span id="cb10-3"><a href="#cb10-3"></a>ctg_split_strat <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(dt, <span class="at">prop =</span> <span class="fl">0.8</span> ,<span class="at">strata =</span> fetal_health)</span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="co">#Distribution of outcome in train and test sets</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="fu">table</span>(<span class="fu">training</span>(ctg_split_strat)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">training</span>(ctg_split_strat))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
  Abnormal    Normal 
@@ -661,11 +662,12 @@ Alton Russell
 <section id="split-training-set-for-cross-validation" class="slide level2">
 <h2>Split training set for cross validation</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>ctg_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(<span class="fu">training</span>(ctg_split_strat), </span>
-<span id="cb14-2"><a href="#cb14-2"></a>         <span class="at">v=</span><span class="dv">3</span>, <span class="co">#three folds</span></span>
-<span id="cb14-3"><a href="#cb14-3"></a>         <span class="at">strata =</span> fetal_health, <span class="co">#stratified on outcome</span></span>
-<span id="cb14-4"><a href="#cb14-4"></a>         <span class="at">repeats =</span> <span class="dv">2</span>) <span class="co">#two repeats</span></span>
-<span id="cb14-5"><a href="#cb14-5"></a>ctg_folds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
+<span id="cb14-2"><a href="#cb14-2"></a>ctg_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(<span class="fu">training</span>(ctg_split_strat), </span>
+<span id="cb14-3"><a href="#cb14-3"></a>         <span class="at">v=</span><span class="dv">3</span>, <span class="co">#three folds</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a>         <span class="at">strata =</span> fetal_health, <span class="co">#stratified on outcome</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a>         <span class="at">repeats =</span> <span class="dv">2</span>) <span class="co">#two repeats</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a>ctg_folds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#  3-fold cross-validation repeated 2 times using stratification 
 # A tibble: 6 × 3
@@ -810,8 +812,8 @@ Computational engine: ranger </code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co">#Create grid of hyperparameters for tuning</span></span>
 <span id="cb18-2"><a href="#cb18-2"></a>rf_grid <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(</span>
-<span id="cb18-3"><a href="#cb18-3"></a>  <span class="fu">mtry</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>)),<span class="co">#number of predictors sampled at each split of tree</span></span>
-<span id="cb18-4"><a href="#cb18-4"></a>  <span class="fu">min_n</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">11</span>)),<span class="co">#Minimum datapoints in node for further split</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a>  <span class="fu">mtry</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">15</span>)),<span class="co">#number of predictors sampled at each split of tree</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a>  <span class="fu">min_n</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">8</span>)),<span class="co">#Minimum datapoints in node for further split</span></span>
 <span id="cb18-5"><a href="#cb18-5"></a>  <span class="at">levels =</span> <span class="dv">3</span></span>
 <span id="cb18-6"><a href="#cb18-6"></a>)</span>
 <span id="cb18-7"><a href="#cb18-7"></a>rf_grid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -819,15 +821,15 @@ Computational engine: ranger </code></pre>
 <pre><code># A tibble: 9 × 2
    mtry min_n
   &lt;int&gt; &lt;int&gt;
-1     1     2
-2     5     2
-3    10     2
-4     1     6
-5     5     6
-6    10     6
-7     1    11
-8     5    11
-9    10    11</code></pre>
+1     5     2
+2    10     2
+3    15     2
+4     5     5
+5    10     5
+6    15     5
+7     5     8
+8    10     8
+9    15     8</code></pre>
 </div>
 </div>
 </section>
@@ -858,11 +860,11 @@ Computational engine: ranger </code></pre>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">show_best</span>(rf_tune_results, <span class="at">metric=</span><span class="st">"roc_auc"</span>, <span class="at">n=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 8
-   mtry min_n .metric .estimator  mean     n  std_err .config             
-  &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt; &lt;chr&gt;               
-1     5     2 roc_auc binary     0.987     6 0.000290 Preprocessor1_Model2
-2     5     6 roc_auc binary     0.987     6 0.000276 Preprocessor1_Model5
-3     5    11 roc_auc binary     0.986     6 0.000271 Preprocessor1_Model8</code></pre>
+   mtry min_n .metric .estimator  mean     n std_err .config             
+  &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+1     5     2 roc_auc binary     0.985     6 0.00182 Preprocessor1_Model1
+2     5     5 roc_auc binary     0.984     6 0.00195 Preprocessor1_Model4
+3     5     8 roc_auc binary     0.984     6 0.00179 Preprocessor1_Model7</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>best_auc <span class="ot">&lt;-</span> <span class="fu">select_best</span>(rf_tune_results, <span class="at">metric =</span> <span class="st">"roc_auc"</span>)</span>
 <span id="cb24-2"><a href="#cb24-2"></a></span>
@@ -890,7 +892,7 @@ Computational engine: ranger </code></pre>
   .metric  .estimator .estimate .config             
   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
 1 accuracy binary         0.951 Preprocessor1_Model1
-2 roc_auc  binary         0.986 Preprocessor1_Model1</code></pre>
+2 roc_auc  binary         0.992 Preprocessor1_Model1</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="co"># Compare predicted risk to actual outcome</span></span>
 <span id="cb27-2"><a href="#cb27-2"></a>preds <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">extract_workflow</span>(rf_test_results), <span class="fu">testing</span>(ctg_split_strat), <span class="at">type=</span><span class="st">"prob"</span>)</span>
@@ -899,11 +901,11 @@ Computational engine: ranger </code></pre>
 <span id="cb27-5"><a href="#cb27-5"></a><span class="fu">head</span>(dt_pred_outcome,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  .pred_Abnormal .pred_Normal    truth
-1       0.933500     0.066500 Abnormal
-2       0.625500     0.374500 Abnormal
-3       0.000000     1.000000   Normal
-4       0.201500     0.798500 Abnormal
-5       0.341875     0.658125   Normal</code></pre>
+1      0.7486667    0.2513333 Abnormal
+2      0.0035000    0.9965000   Normal
+3      0.0000000    1.0000000   Normal
+4      0.9975000    0.0025000 Abnormal
+5      0.0590000    0.9410000   Normal</code></pre>
 </div>
 </div>
 </section>
@@ -922,9 +924,9 @@ Computational engine: ranger </code></pre>
        &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
 1  -Inf            0               1
 2     0            0               1
-3     0.0005       0.190           1
-4     0.001        0.211           1
-5     0.0015       0.290           1</code></pre>
+3     0.0005       0.211           1
+4     0.001        0.239           1
+5     0.0015       0.323           1</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="co">#autoplot(roc)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>

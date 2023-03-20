@@ -1,0 +1,132 @@
+---
+title: "Supervised machine learning tutorial"
+format: html
+---
+
+## Background
+
+First we load packages.
+
+```{r}
+#| echo: true
+# install.packages("tidyverse","tidymodels", "ranger")
+library(tidyverse)
+library(tidymodels)
+library(ranger) #random forest engine
+theme_set(theme_bw())
+```
+
+A little about the data:
+
+-   Tabular data derived from **cardiotocography (CTGs)** from 2126 pregnant patients.
+
+-   Outcome: fetal health is normal vs. suspect, or pathological
+
+    -   Recategorized: normal vs. abnormal (suspect or pathological)
+
+::: columns
+::: {.column width="50%"}
+![](CTG_device.jpeg)
+:::
+
+::: {.column width="50%"}
+![](CTG_output.jpeg)
+:::
+:::
+
+Dataset: [Fetal Health Classigication on Kaggle](https://www.kaggle.com/datasets/andrewmvd/fetal-health-classification). Images: [Thinkstock](https://www.babycenter.in/x1045384/what-is-cardiotocography-ctg-and-why-do-i-need-it); [geekymedics.com](https://geekymedics.com/how-to-read-a-ctg/)
+
+## Read and format the data
+
+```{r}
+#| echo: true
+
+dt <- read_csv("fetal_health.csv") |>
+  mutate(fetal_health = as.factor(ifelse(fetal_health==1,"Normal", "Abnormal")))
+str(dt)
+
+#specify a recipe (what are we predicting, what are the features)
+ctg_recipe <- recipe(fetal_health~., data=dt)
+
+```
+
+## Data splitting
+
+```{r}
+#| echo: true
+set.seed(456)
+ctg_folds <- vfold_cv(training(ctg_split_strat), 
+         v=3, #three folds
+         strata = fetal_health, #stratified on outcome
+         repeats = 2) #two repeats
+```
+
+## Model tuning
+
+### Random forest (example from lecture)
+
+```{r}
+#| echo: true
+
+
+
+#specify random forest model for tuning
+rf_tune_spec <- rand_forest(mtry = tune(),
+                       trees = 1000,
+                       min_n = tune(),
+
+rf_grid <- grid_regular(
+  mtry(range = c(5, 15)),#number of predictors sampled at each split of tree
+  min_n(range = c(2, 8)),#Minimum datapoints in node for further split
+  levels = 3
+)
+rf_grid
+
+set.seed(456)
+rf_tune_results <- tune_grid(
+  rf_tune_spec,
+  ctg_recipe,
+  resamples = ctg_folds,
+  grid = rf_grid
+)
+
+autoplot(rf_tune_results)
+
+show_best()
+```
+
+### Elasticnet
+
+https://parsnip.tidymodels.org/reference/logistic_reg.html
+
+It's just logistic regression but with one or two penalties to prevent overfitting, called regularization. Matters more when more covariates are available. For our problem, we have 21 covariates. However, if we wanted, we could include all pairwise interactions between covariates, increasing the number of covariates to 21 + 210 = 231 covariates, in which case logistic regression may overfit without regularization.
+
+```{r}
+#| echo: true
+
+#specify a recipe for all individual variables AND pairwise interaction terms
+ctg_recipe_interactions <- recipe(fetal_health~.^2, data=dt) 
+
+#specify random forest model for tuning
+en_tune_spec <- rand_forest(mtry = tune(),
+                       trees = 1000,
+                       min_n = tune(),
+
+en_grid <- expand_grid(
+  mixture = c(0, .33, .66, 1), #1 = lasso model, 0=ridge model
+  penalty = c(0.1, 0.01, 0.001) #size of penalty
+)
+en_grid
+```
+
+### Gradient boosted machines
+
+Like random forest, it's an ensemble of trees.
+
+![](images/image-902635269.png)
+
+https://parsnip.tidymodels.org/reference/boost_tree.html
+
+### Model selection
+
+### Unbiased performance of top model
