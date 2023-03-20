@@ -7,39 +7,142 @@ format: revealjs
 editor: visual
 ---
 
-## Packages
+## R packages used
 
 ```{r}
+#| echo: true
+# install.packages("tidyverse","tidymodels", "ranger")
 library(tidyverse)
 library(tidymodels)
+library(ranger)
+library(caret) #for calibration plot
+library(vip) #for variable importance plot
+theme_set(theme_bw())
 ```
 
 ## Agenda
 
--   **Types of machine learning**
+-   **Types of supervised learning**
 -   Model development and selection
--   Generalization and calibration
 -   Clinically useful models
 
-## Machine learning in a nutshell
+## Supervised learning in a nutshell
+
+-   **Development:** Learn to predict output of interest on **labeled examples** (features + outcome)
+
+    -   Complex functions mapping inputs to output
+
+-   **Deployment:** Generate prediction for new unlabeled example
+
+![](neutral-network-diagram.svg)
+
+## ML vs. statistical modeling
+
+::: columns
+::: {.column width="60%"}
+-   Relationship between variables learned from data, not pre-specified
+
+-   Allows complex non-linear relationships
+
+-   Less interpretable
+
+-   Fewer theoretical guarantees
+
+-   Not fit for causal inference! (Except for causal ML)
+:::
+
+::: {.column width="40%"}
+![](XKCD_ml.png)
+:::
+:::
 
 ## Regression
 
+::: columns
+::: {.column width="50%"}
+-   Predict continuous outcome
+
+-   Examples: hemoglobin level, length of stay
+
+-   Statistics analog: linear regression
+:::
+
+::: {.column width="50%"}
+![](regression_example.png)
+:::
+:::
+
 ## "Classification" or risk prediction
+
+::: columns
+::: {.column width="50%"}
+-   Predict categorical event (death, recurrence, rehospitalization)
+
+-   Statistics analog: logistic regression
+
+-   Includes multiclass models (e.g., which of 10 diagnoses is it)
+:::
+
+::: {.column width="50%"}
+![](classification_plot.png)
+:::
+:::
 
 ## Dichotomania
 
+-   Strict classification only returns the most likely class
+
+    -   "Patient will get pneumonia"
+
+-   Estimated risk \>\> strict classification
+
+    -   51% vs. 99% chance of pneumonia is different
+
+    -   Optimal clinical decision often differs based on risk (e.g., do nothing, treat or conduct additional test) and other variables
+
+-   [**Always**]{.underline} question value and viability models that don't give estimated risk
+
+## Visualizing estimated risk
+
+![](pdp-cervical-2d.jpeg)
+
+[Interpretable Machine Learning by Molnar](https://christophm.github.io/interpretable-ml-book/)
+
 ## Computer vision
 
-## Language models
+::: columns
+::: {.column width="50%"}
+-   Analyze pixel data
+
+-   Often, goal is to outline pbjects and assign label
+
+    -   Person, car or tree
+
+    -   Abnormality, tumor
+
+-   Used for X-ray, ultrasound, microscopy images
+:::
+
+::: {.column width="50%"}
+![](computer_vision_xray.PNG)
+
+[Kundu et. al. 2021](https://doi.org/10.1371/journal.pone.0256630)
+:::
+:::
+
+## Agenda
+
+-   Types of supervised learning
+-   **Model development and selection**
+-   Clinically useful models
 
 ## Our example data[^1]
 
-[^1]: Dataset: [Fetal Health Classigication on Kaggle](https://www.kaggle.com/datasets/andrewmvd/fetal-health-classification). Images: [Thinkstock](https://www.babycenter.in/x1045384/what-is-cardiotocography-ctg-and-why-do-i-need-it); [geekymedics.com](https://geekymedics.com/how-to-read-a-ctg/)
+[^1]: Dataset: [Fetal health classification on Kaggle](https://www.kaggle.com/datasets/andrewmvd/fetal-health-classification). Images: [Thinkstock](https://www.babycenter.in/x1045384/what-is-cardiotocography-ctg-and-why-do-i-need-it); [geekymedics.com](https://geekymedics.com/how-to-read-a-ctg/)
 
 Tabular data derived from **cardiotocograms (CTGs)** from 2126 pregnant patients.
 
-21 characteristics classified as normal, suspect, or pathological.
+Outcome: fetal health is normal vs. suspect, or pathological.
 
 ::: columns
 ::: {.column width="50%"}
@@ -56,90 +159,352 @@ Tabular data derived from **cardiotocograms (CTGs)** from 2126 pregnant patients
 ```{r}
 #| echo: true
 
-dt <- read_csv("fetal_health.csv")
-head(dt, 4)
+dt <- read_csv("fetal_health.csv") |>
+  mutate(fetal_health = as.factor(ifelse(fetal_health==1,"Normal", "Abnormal")))
+str(dt)
 ```
 
-## Agenda
+## Overfitting
 
--   Types of ML for clinical application
--   **Model development and selection**
--   Generalization and calibration
--   Considering clinical utility
+![](overfitting_classifier.jpeg)
 
-## Overfitting on training data
+[raaicode.com](https://www.raaicode.com/what-is-overfitting/)
 
-![](tuning-overfitting-train.svg)
+## Holding out a test set
 
-<https://workshops.tidymodels.org/>
+-   Allocate some of your data as the hold out test set
 
-## Overfit model on test data
+-   Use the remaining data to train model
 
-![](tuning-overfitting-test.svg)
+-   At the [**very end**]{.underline}, run [**only one**]{.underline} [**final model**]{.underline} on the test set for an unbiased estimate of performance
 
-## Data splitting
-
-## Cross validation
-
-![](three-CV.svg)
-
-## Cross validation
-
-![](three-CV-iter.svg)
-
-## Cross validation
-
-```{r}
-vfold_cv(frog_train) # v = 10 is default
-frog_folds$splits[1:3]
-vfold_cv(frog_train, v = 5)
-vfold_cv(frog_train, strata = latency)
-```
+![](train_test_split.png)
 
 ## Splitting with rsample
 
 ```{r}
 #| echo: true
-set.seed(123) #for reproducibility
+set.seed(125) #for reproducibility
 ctg_split <- initial_split(dt, prop = 0.8)
 ctg_split
+
+#Distribution of outcome in train and test sets
+table(training(ctg_split)$fetal_health)/nrow(training(ctg_split))
+table(testing(ctg_split)$fetal_health)/nrow(testing(ctg_split))
 ```
 
-## Training set
+## Stratified split
 
 ```{r}
 #| echo: true
-training(ctg_split)
-```
 
-## Testing set
-
-```{r}
-#| echo: true
-testing(ctg_split)
-```
-
-## Stratification
-
-```{r}
-#| echo: true
-set.seed(123) #for reproducibility
+#Split while stratifying on outcome
 ctg_split_strat <- initial_split(dt, prop = 0.8 ,strata = fetal_health)
-ctg_split_strat
+
+#Distribution of outcome in train and test sets
+table(training(ctg_split_strat)$fetal_health)/nrow(training(ctg_split_strat))
+table(testing(ctg_split_strat)$fetal_health)/nrow(testing(ctg_split_strat))
 ```
 
-## Metrics
+Stratifying is easy to do and can help ensure data is representative across splits
+
+## Model selection
+
+-   If training one model, can train on full training data
+
+-   Usually, want to compare several **model configurations** and select the best one
+
+-   Model configuration = algorithm + hyperparameters
+
+    -   Algorithm: type of model (e.g., random forest)
+
+    -   Hyperparameter: a 'setting' of that model (e.g., minimum node size)
+
+-   Requires further splitting of training data to separate training and validation tasks.
+
+## Cross validation
+
+Randomly assign each row of data to a 'fold'
+
+![](three-CV.svg)
+
+[workshops.tidymodels.org](https://workshops.tidymodels.org)
+
+## Cross validation
+
+![](three-CV-iter.svg)
+
+[workshops.tidymodels.org](https://workshops.tidymodels.org)
+
+## Cross validation
+
+![](cross_validation_overview.png)
+
+[Statology](https://www.statology.org/validation-set-vs-test-set/)
+
+## Split training set for cross validation
+
+```{r}
+#| echo: true
+
+ctg_folds <- vfold_cv(training(ctg_split_strat), 
+         v=3, #three folds
+         strata = fetal_health, #stratified on outcome
+         repeats = 2) #two repeats
+ctg_folds
+```
+
+## Evaluating models
+
+-   Performance metrics identify how 'good' the model is for given dataset
+
+    -   Perfectly predicts outcome = perfect performance
+    -   Error metrics: smaller is better
+    -   Positive metrics: bigger is better
+
+-   Metrics differ for regression vs. classification
+
+## Regression metrics
+
+::: columns
+::: {.column width="50%"}
+Per each example, error is difference between actual outcome $y$ and predicted outcome $\hat{y}$
+
+-   Mean absolute error: $\frac{1}{n} \sum \mid y - \hat{y} \mid$
+-   Mean squared error: $\frac{1}{n} \sum [y - \hat{y}]^2$
+-   Root mean squared error: $\sqrt{\frac{1}{n} \sum [y - \hat{y}]^2}$
+:::
+
+::: {.column width="50%"}
+![](rmse_vs_mae.webp)
+:::
+:::
+
+## Classification metrics: confusion matrix-based
+
+::: columns
+::: {.column width="65%"}
+**After dichotomizing predicted risk**, you can create a confusion matrix
+
+Many metrics derived from it
+
+-   Accuracy: $\frac{TP+TN}{TP+TN+FP+FN}$
+
+-   Precision: $\frac{TP}{PT+FP}$
+
+-   Recall: $\frac{TP}{TP+FN}$
+:::
+
+::: {.column width="35%"}
+![](confusion_matrix.webp)
+
+[Harikrishnan N B Medium](https://medium.com/analytics-vidhya/confusion-matrix-accuracy-precision-recall-f1-score-ade299cf63cd#:~:text=What%20is%20the%20accuracy%20of,the%20accuracy%20will%20be%2085%25.)
+:::
+:::
+
+Often don't want to dichotomize in model selection for clinical prediction tasks.
+
+## Area under the ROC curve
+
+::: columns
+::: {.column width="65%"}
+Measure of **discrimination**: Higher if the examples with a positive outcome were assigned a hgiher risk score
+
+-   -,-,-,-,-,+,+,+,+ $\rightarrow$ AUC=1 (perfectly discriminated +'s from -'s)
+
+-   -,+,-,+,-,+,-,+,-,+ $\rightarrow$ AUC = 0.5 (random chance)
+
+Does not measure **calibration** (how closely the predicted probabilities match actual risk)
+:::
+
+::: {.column width="35%"}
+![](ROC_curve.png)
+:::
+:::
+
+## Performance in train, test, validate data
+
+-   Performance on [**training data**]{.underline} optimistic due to overfitting
+
+    -   Use for nothing
+
+-   If many models compared, performance of top model on [**validation data**]{.underline} (e.g., cross validation folds) also optimistic
+
+    -   Use for selection only
+
+-   Performance on [**test data**]{.underline} only unbiased measure of performance
+
+## [tidymodels](https://www.tidymodels.org/find/parsnip/)
+
+![](parsnip_models.png)
 
 ## Random forest model
 
--   Ensemble (combine) many decision trees
+-   Ensembles (combines) many decision trees
 
--   Trees 'vote'
+-   Uses bootstrap resampling to randomly select which training examples are used in each tree
 
--   
+-   Covariates used for branching each tree also random
 
-## Hyperparameter tuning
+-   Trees 'votes' are counted to estimate probability of outcome
 
-## Grid search
+## Decision tree example
 
-## Calibration
+![](tree-example.svg)
+
+[workshops.tidymodels.org](https://workshops.tidymodels.org)
+
+## Random forest in tidymodels
+
+![](rand_forest_parsnip.png)
+
+## Random forest hyperparameters
+
+![](parsnip_RF_arguments.png)
+
+## Tuning random forest model
+
+```{r}
+#| echo: true
+
+#specify a recipe (prediction task as formula; 
+#.  can also include preprocessing)
+ctg_recipe <- recipe(fetal_health~., data=dt)
+
+#specify random forest model for tuning
+rf_tune_spec <- rand_forest(mtry = tune(),
+                       trees = 1000,
+                       min_n = tune(),
+                       mode = "classification")
+rf_tune_spec
+```
+
+## Grid of hyperparameter settings
+
+```{r}
+#| echo: true
+#Create grid of hyperparameters for tuning
+rf_grid <- grid_regular(
+  mtry(range = c(1, 10)),#number of predictors sampled at each split of tree
+  min_n(range = c(2, 11)),#Minimum datapoints in node for further split
+  levels = 3
+)
+rf_grid
+```
+
+## Tune the random forest model
+
+```{r}
+#| echo: true
+# Tune the model
+set.seed(456)
+rf_tune_results <- tune_grid(
+  rf_tune_spec,
+  ctg_recipe,
+  resamples = ctg_folds,
+  grid = rf_grid
+)
+```
+
+We have 2 repeats of 3 fold cross validation and 3x3 hyperparameter settings. How many random forest models will we train before selecting the top model?
+
+## Compare AUC by hyperparameter setting
+
+```{r}
+#| echo: true
+autoplot(rf_tune_results)
+```
+
+## Evaluate top configuration in test set
+
+```{r}
+#| echo: true
+show_best(rf_tune_results, metric="roc_auc", n=3)
+best_auc <- select_best(rf_tune_results, metric = "roc_auc")
+
+#Specify a model with best hyperparameters
+rf_best_spec <- rand_forest(mtry = best_auc$mtry,
+                       trees = 1000,
+                       min_n = best_auc$min_n,
+                       mode = "classification") |>
+  set_engine("ranger", importance = "impurity")
+
+#Trains top configuration on all training set; predict on test set
+rf_test_results <- last_fit(
+  rf_best_spec,
+  ctg_recipe,
+  split = ctg_split_strat)
+```
+
+## Predict on test set
+
+```{r}
+#| echo: true
+#Estiamte unbiased performance on test set
+rf_test_results %>% collect_metrics()
+# Compare predicted risk to actual outcome
+preds <- predict(extract_workflow(rf_test_results), testing(ctg_split_strat), type="prob")
+dt_pred_outcome <- cbind(preds,
+                         truth =testing(ctg_split_strat)$fetal_health)
+head(dt_pred_outcome,5)
+```
+
+## Plot the ROC curve
+
+::: columns
+::: {.column width="50%"}
+```{r}
+#| echo: true
+roc <- roc_curve(dt_pred_outcome, 
+                 truth, 
+                 .pred_Abnormal)
+head(roc, 5)
+#autoplot(roc)
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: false
+autoplot(roc)
+```
+:::
+:::
+
+## Assess calibration
+
+```{r}
+#| echo: true
+calibration_obj <- caret::calibration(truth ~ .pred_Abnormal, 
+                                      data = dt_pred_outcome,
+                                      cuts = 6)
+ggplot(calibration_obj)
+```
+
+## Plot variable importance
+
+```{r}
+#| echo: true
+rf_test_results |>
+  extract_fit_parsnip() |>
+  vip(num_features = 10)
+
+```
+
+## Model development takeaways
+
+-   Model development separates model training, validation/comparison/selection, and testing
+
+-   Only unbiased performance estimate comes from test data not used for training or selection
+
+-   For applied ML, rigorous model development more important than in-depth understanding of algorithms
+
+## Agenda
+
+-   Types of supervised learning
+-   Model development and selection
+-   **Clinically useful models**
+
+## Switching to Powerpoint
+
+Link here

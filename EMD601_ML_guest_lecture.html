@@ -401,43 +401,132 @@ Alton Russell
 
   <p class="date">3/20/23</p>
 </section>
-<section id="packages" class="slide level2">
-<h2>Packages</h2>
+<section id="r-packages-used" class="slide level2">
+<h2>R packages used</h2>
 <div class="cell">
-
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># install.packages("tidyverse","tidymodels", "ranger")</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(ranger)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">library</span>(caret) <span class="co">#for calibration plot</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="fu">library</span>(vip) <span class="co">#for variable importance plot</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
 <ul>
-<li><strong>Types of machine learning</strong></li>
+<li><strong>Types of supervised learning</strong></li>
 <li>Model development and selection</li>
-<li>Generalization and calibration</li>
-<li>Considering clinical utility</li>
+<li>Clinically useful models</li>
 </ul>
 </section>
-<section id="machine-learning-in-a-nutshell" class="slide level2">
-<h2>Machine learning in a nutshell</h2>
+<section id="supervised-learning-in-a-nutshell" class="slide level2">
+<h2>Supervised learning in a nutshell</h2>
+<ul>
+<li><p><strong>Development:</strong> Learn to predict output of interest on <strong>labeled examples</strong> (features + outcome)</p>
+<ul>
+<li>Complex functions mapping inputs to output</li>
+</ul></li>
+<li><p><strong>Deployment:</strong> Generate prediction for new unlabeled example</p></li>
+</ul>
+
+<img data-src="neutral-network-diagram.svg" class="r-stretch"></section>
+<section id="ml-vs.-statistical-modeling" class="slide level2">
+<h2>ML vs.&nbsp;statistical modeling</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<ul>
+<li><p>Relationship between variables learned from data, not pre-specified</p></li>
+<li><p>Allows complex non-linear relationships</p></li>
+<li><p>Less interpretable</p></li>
+<li><p>Fewer theoretical guarantees</p></li>
+<li><p>Not fit for causal inference! (Except for causal ML)</p></li>
+</ul>
+</div><div class="column" style="width:40%;">
+<p><img data-src="XKCD_ml.png"></p>
+</div>
+</div>
 </section>
 <section id="regression" class="slide level2">
 <h2>Regression</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><p>Predict continuous outcome</p></li>
+<li><p>Examples: hemoglobin level, length of stay</p></li>
+<li><p>Statistics analog: linear regression</p></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img data-src="regression_example.png"></p>
+</div>
+</div>
 </section>
 <section id="classification-or-risk-prediction" class="slide level2">
 <h2>“Classification” or risk prediction</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><p>Predict categorical event (death, recurrence, rehospitalization)</p></li>
+<li><p>Statistics analog: logistic regression</p></li>
+<li><p>Includes multiclass models (e.g., which of 10 diagnoses is it)</p></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img data-src="classification_plot.png"></p>
+</div>
+</div>
 </section>
 <section id="dichotomania" class="slide level2">
 <h2>Dichotomania</h2>
+<ul>
+<li><p>Strict classification only returns the most likely class</p>
+<ul>
+<li>“Patient will get pneumonia”</li>
+</ul></li>
+<li><p>Estimated risk &gt;&gt; strict classification</p>
+<ul>
+<li><p>51% vs.&nbsp;99% chance of pneumonia is different</p></li>
+<li><p>Optimal clinical decision often differs based on risk (e.g., do nothing, treat or conduct additional test) and other variables</p></li>
+</ul></li>
+<li><p><u><strong>Always</strong></u> question value and viability models that don’t give estimated risk</p></li>
+</ul>
+</section>
+<section id="visualizing-estimated-risk" class="slide level2">
+<h2>Visualizing estimated risk</h2>
+
+<img data-src="pdp-cervical-2d.jpeg" class="r-stretch"><p><a href="https://christophm.github.io/interpretable-ml-book/">Interpretable Machine Learning by Molnar</a></p>
 </section>
 <section id="computer-vision" class="slide level2">
 <h2>Computer vision</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><p>Analyze pixel data</p></li>
+<li><p>Often, goal is to outline pbjects and assign label</p>
+<ul>
+<li><p>Person, car or tree</p></li>
+<li><p>Abnormality, tumor</p></li>
+</ul></li>
+<li><p>Used for X-ray, ultrasound, microscopy images</p></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img data-src="computer_vision_xray.PNG"></p>
+<p><a href="https://doi.org/10.1371/journal.pone.0256630">Kundu et. al.&nbsp;2021</a></p>
+</div>
+</div>
 </section>
-<section id="language-models" class="slide level2">
-<h2>Language models</h2>
+<section id="agenda-1" class="slide level2">
+<h2>Agenda</h2>
+<ul>
+<li>Types of supervised learning</li>
+<li><strong>Model development and selection</strong></li>
+<li>Clinically useful models</li>
+</ul>
 </section>
 <section id="our-example-data1" class="slide level2">
 <h2>Our example data<sup>1</sup></h2>
 <p>Tabular data derived from <strong>cardiotocograms (CTGs)</strong> from 2126 pregnant patients.</p>
-<p>21 characteristics classified as normal, suspect, or pathological.</p>
+<p>Outcome: fetal health is normal vs.&nbsp;suspect, or pathological.</p>
 <div class="columns">
 <div class="column" style="width:50%;">
 <p><img data-src="CTG_device.jpeg"></p>
@@ -445,41 +534,447 @@ Alton Russell
 <p><img data-src="CTG_output.jpeg"></p>
 </div>
 </div>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>Dataset: <a href="https://www.kaggle.com/datasets/andrewmvd/fetal-health-classification">Fetal Health Classigication on Kaggle</a>. Images: <a href="https://www.babycenter.in/x1045384/what-is-cardiotocography-ctg-and-why-do-i-need-it">Thinkstock</a>; <a href="https://geekymedics.com/how-to-read-a-ctg/">geekymedics.com</a></p></li></ol></aside></section>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>Dataset: <a href="https://www.kaggle.com/datasets/andrewmvd/fetal-health-classification">Fetal health classification on Kaggle</a>. Images: <a href="https://www.babycenter.in/x1045384/what-is-cardiotocography-ctg-and-why-do-i-need-it">Thinkstock</a>; <a href="https://geekymedics.com/how-to-read-a-ctg/">geekymedics.com</a></p></li></ol></aside></section>
 <section id="our-example-data" class="slide level2">
 <h2>Our example data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>dt <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"fetal_health.csv"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">head</span>(dt, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>dt <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"fetal_health.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">mutate</span>(<span class="at">fetal_health =</span> <span class="fu">as.factor</span>(<span class="fu">ifelse</span>(fetal_health<span class="sc">==</span><span class="dv">1</span>,<span class="st">"Normal"</span>, <span class="st">"Abnormal"</span>)))</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="fu">str</span>(dt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 22
-  baseline val…¹ accel…² fetal…³ uteri…⁴ light…⁵ sever…⁶ prolo…⁷ abnor…⁸ mean_…⁹
-           &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-1            120   0           0   0       0           0       0      73     0.5
-2            132   0.006       0   0.006   0.003       0       0      17     2.1
-3            133   0.003       0   0.008   0.003       0       0      16     2.1
-4            134   0.003       0   0.008   0.003       0       0      16     2.4
-# … with 13 more variables:
-#   percentage_of_time_with_abnormal_long_term_variability &lt;dbl&gt;,
-#   mean_value_of_long_term_variability &lt;dbl&gt;, histogram_width &lt;dbl&gt;,
-#   histogram_min &lt;dbl&gt;, histogram_max &lt;dbl&gt;, histogram_number_of_peaks &lt;dbl&gt;,
-#   histogram_number_of_zeroes &lt;dbl&gt;, histogram_mode &lt;dbl&gt;,
-#   histogram_mean &lt;dbl&gt;, histogram_median &lt;dbl&gt;, histogram_variance &lt;dbl&gt;,
-#   histogram_tendency &lt;dbl&gt;, fetal_health &lt;dbl&gt;, and abbreviated variable …</code></pre>
+<pre><code>tibble [2,126 × 22] (S3: tbl_df/tbl/data.frame)
+ $ baseline value                                        : num [1:2126] 120 132 133 134 132 134 134 122 122 122 ...
+ $ accelerations                                         : num [1:2126] 0 0.006 0.003 0.003 0.007 0.001 0.001 0 0 0 ...
+ $ fetal_movement                                        : num [1:2126] 0 0 0 0 0 0 0 0 0 0 ...
+ $ uterine_contractions                                  : num [1:2126] 0 0.006 0.008 0.008 0.008 0.01 0.013 0 0.002 0.003 ...
+ $ light_decelerations                                   : num [1:2126] 0 0.003 0.003 0.003 0 0.009 0.008 0 0 0 ...
+ $ severe_decelerations                                  : num [1:2126] 0 0 0 0 0 0 0 0 0 0 ...
+ $ prolongued_decelerations                              : num [1:2126] 0 0 0 0 0 0.002 0.003 0 0 0 ...
+ $ abnormal_short_term_variability                       : num [1:2126] 73 17 16 16 16 26 29 83 84 86 ...
+ $ mean_value_of_short_term_variability                  : num [1:2126] 0.5 2.1 2.1 2.4 2.4 5.9 6.3 0.5 0.5 0.3 ...
+ $ percentage_of_time_with_abnormal_long_term_variability: num [1:2126] 43 0 0 0 0 0 0 6 5 6 ...
+ $ mean_value_of_long_term_variability                   : num [1:2126] 2.4 10.4 13.4 23 19.9 0 0 15.6 13.6 10.6 ...
+ $ histogram_width                                       : num [1:2126] 64 130 130 117 117 150 150 68 68 68 ...
+ $ histogram_min                                         : num [1:2126] 62 68 68 53 53 50 50 62 62 62 ...
+ $ histogram_max                                         : num [1:2126] 126 198 198 170 170 200 200 130 130 130 ...
+ $ histogram_number_of_peaks                             : num [1:2126] 2 6 5 11 9 5 6 0 0 1 ...
+ $ histogram_number_of_zeroes                            : num [1:2126] 0 1 1 0 0 3 3 0 0 0 ...
+ $ histogram_mode                                        : num [1:2126] 120 141 141 137 137 76 71 122 122 122 ...
+ $ histogram_mean                                        : num [1:2126] 137 136 135 134 136 107 107 122 122 122 ...
+ $ histogram_median                                      : num [1:2126] 121 140 138 137 138 107 106 123 123 123 ...
+ $ histogram_variance                                    : num [1:2126] 73 12 13 13 11 170 215 3 3 1 ...
+ $ histogram_tendency                                    : num [1:2126] 1 0 0 1 1 0 0 1 1 1 ...
+ $ fetal_health                                          : Factor w/ 2 levels "Abnormal","Normal": 1 2 2 2 2 1 1 1 1 1 ...</code></pre>
 </div>
 </div>
-</section>
-<section id="agenda-1" class="slide level2">
-<h2>Agenda</h2>
-<ul>
-<li>Types of ML for clinical application</li>
-<li><strong>Model development and selection</strong></li>
-<li>Generalization and calibration</li>
-<li>Considering clinical utility</li>
-</ul>
 </section>
 <section id="overfitting" class="slide level2">
 <h2>Overfitting</h2>
+
+<img data-src="overfitting_classifier.jpeg" class="r-stretch"><p><a href="https://www.raaicode.com/what-is-overfitting/">raaicode.com</a></p>
+</section>
+<section id="holding-out-a-test-set" class="slide level2">
+<h2>Holding out a test set</h2>
+<ul>
+<li><p>Allocate some of your data as the hold out test set</p></li>
+<li><p>Use the remaining data to train model</p></li>
+<li><p>At the <u><strong>very end</strong></u>, run <u><strong>only one</strong></u> <u><strong>final model</strong></u> on the test set for an unbiased estimate of performance</p></li>
+</ul>
+
+<img data-src="train_test_split.png" class="r-stretch"></section>
+<section id="splitting-with-rsample" class="slide level2">
+<h2>Splitting with rsample</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">set.seed</span>(<span class="dv">125</span>) <span class="co">#for reproducibility</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>ctg_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(dt, <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a>ctg_split</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;Training/Testing/Total&gt;
+&lt;1700/426/2126&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">#Distribution of outcome in train and test sets</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="fu">table</span>(<span class="fu">training</span>(ctg_split)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">training</span>(ctg_split))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ Abnormal    Normal 
+0.2158824 0.7841176 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">table</span>(<span class="fu">testing</span>(ctg_split)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">testing</span>(ctg_split))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ Abnormal    Normal 
+0.2441315 0.7558685 </code></pre>
+</div>
+</div>
+</section>
+<section id="stratified-split" class="slide level2">
+<h2>Stratified split</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">#Split while stratifying on outcome</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>ctg_split_strat <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(dt, <span class="at">prop =</span> <span class="fl">0.8</span> ,<span class="at">strata =</span> fetal_health)</span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="co">#Distribution of outcome in train and test sets</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="fu">table</span>(<span class="fu">training</span>(ctg_split_strat)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">training</span>(ctg_split_strat))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ Abnormal    Normal 
+0.2211765 0.7788235 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">table</span>(<span class="fu">testing</span>(ctg_split_strat)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">testing</span>(ctg_split_strat))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ Abnormal    Normal 
+0.2230047 0.7769953 </code></pre>
+</div>
+</div>
+<p>Stratifying is easy to do and can help ensure data is representative across splits</p>
+</section>
+<section id="model-selection" class="slide level2">
+<h2>Model selection</h2>
+<ul>
+<li><p>If training one model, can train on full training data</p></li>
+<li><p>Usually, want to compare several <strong>model configurations</strong> and select the best one</p></li>
+<li><p>Model configuration = algorithm + hyperparameters</p>
+<ul>
+<li><p>Algorithm: type of model (e.g., random forest)</p></li>
+<li><p>Hyperparameter: a ‘setting’ of that model (e.g., minimum node size)</p></li>
+</ul></li>
+<li><p>Requires further splitting of training data to separate training and validation tasks.</p></li>
+</ul>
+</section>
+<section id="cross-validation" class="slide level2">
+<h2>Cross validation</h2>
+<p>Randomly assign each row of data to a ‘fold’</p>
+
+<img data-src="three-CV.svg" class="r-stretch"><p><a href="https://workshops.tidymodels.org">workshops.tidymodels.org</a></p>
+</section>
+<section id="cross-validation-1" class="slide level2">
+<h2>Cross validation</h2>
+
+<img data-src="three-CV-iter.svg" class="r-stretch"><p><a href="https://workshops.tidymodels.org">workshops.tidymodels.org</a></p>
+</section>
+<section id="cross-validation-2" class="slide level2">
+<h2>Cross validation</h2>
+
+<img data-src="cross_validation_overview.png" class="r-stretch"><p><a href="https://www.statology.org/validation-set-vs-test-set/">Statology</a></p>
+</section>
+<section id="split-training-set-for-cross-validation" class="slide level2">
+<h2>Split training set for cross validation</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>ctg_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(<span class="fu">training</span>(ctg_split_strat), </span>
+<span id="cb14-2"><a href="#cb14-2"></a>         <span class="at">v=</span><span class="dv">3</span>, <span class="co">#three folds</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a>         <span class="at">strata =</span> fetal_health, <span class="co">#stratified on outcome</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a>         <span class="at">repeats =</span> <span class="dv">2</span>) <span class="co">#two repeats</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a>ctg_folds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#  3-fold cross-validation repeated 2 times using stratification 
+# A tibble: 6 × 3
+  splits             id      id2  
+  &lt;list&gt;             &lt;chr&gt;   &lt;chr&gt;
+1 &lt;split [1132/568]&gt; Repeat1 Fold1
+2 &lt;split [1134/566]&gt; Repeat1 Fold2
+3 &lt;split [1134/566]&gt; Repeat1 Fold3
+4 &lt;split [1132/568]&gt; Repeat2 Fold1
+5 &lt;split [1134/566]&gt; Repeat2 Fold2
+6 &lt;split [1134/566]&gt; Repeat2 Fold3</code></pre>
+</div>
+</div>
+</section>
+<section id="evaluating-models" class="slide level2">
+<h2>Evaluating models</h2>
+<ul>
+<li><p>Performance metrics identify how ‘good’ the model is for given dataset</p>
+<ul>
+<li>Perfectly predicts outcome = perfect performance</li>
+<li>Error metrics: smaller is better</li>
+<li>Positive metrics: bigger is better</li>
+</ul></li>
+<li><p>Metrics differ for regression vs.&nbsp;classification</p></li>
+</ul>
+</section>
+<section id="regression-metrics" class="slide level2">
+<h2>Regression metrics</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Per each example, error is difference between actual outcome <span class="math inline">\(y\)</span> and predicted outcome <span class="math inline">\(\hat{y}\)</span></p>
+<ul>
+<li>Mean absolute error: <span class="math inline">\(\frac{1}{n} \sum \mid y - \hat{y} \mid\)</span></li>
+<li>Mean squared error: <span class="math inline">\(\frac{1}{n} \sum [y - \hat{y}]^2\)</span></li>
+<li>Root mean squared error: <span class="math inline">\(\sqrt{\frac{1}{n} \sum [y - \hat{y}]^2}\)</span></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img data-src="rmse_vs_mae.webp"></p>
+</div>
+</div>
+</section>
+<section id="classification-metrics-confusion-matrix-based" class="slide level2">
+<h2>Classification metrics: confusion matrix-based</h2>
+<div class="columns">
+<div class="column" style="width:65%;">
+<p><strong>After dichotomizing predicted risk</strong>, you can create a confusion matrix</p>
+<p>Many metrics derived from it</p>
+<ul>
+<li><p>Accuracy: <span class="math inline">\(\frac{TP+TN}{TP+TN+FP+FN}\)</span></p></li>
+<li><p>Precision: <span class="math inline">\(\frac{TP}{PT+FP}\)</span></p></li>
+<li><p>Recall: <span class="math inline">\(\frac{TP}{TP+FN}\)</span></p></li>
+</ul>
+</div><div class="column" style="width:35%;">
+<p><img data-src="confusion_matrix.webp"></p>
+<p><a href="https://medium.com/analytics-vidhya/confusion-matrix-accuracy-precision-recall-f1-score-ade299cf63cd#:~:text=What%20is%20the%20accuracy%20of,the%20accuracy%20will%20be%2085%25.">Harikrishnan N B Medium</a></p>
+</div>
+</div>
+<p>Often don’t want to dichotomize in model selection for clinical prediction tasks.</p>
+</section>
+<section id="area-under-the-roc-curve" class="slide level2">
+<h2>Area under the ROC curve</h2>
+<div class="columns">
+<div class="column" style="width:65%;">
+<p>Measure of <strong>discrimination</strong>: Higher if the examples with a positive outcome were assigned a hgiher risk score</p>
+<ul>
+<li><p>-,-,-,-,-,+,+,+,+ <span class="math inline">\(\rightarrow\)</span> AUC=1 (perfectly discriminated +’s from -’s)</p></li>
+<li><p>-,+,-,+,-,+,-,+,-,+ <span class="math inline">\(\rightarrow\)</span> AUC = 0.5 (random chance)</p></li>
+</ul>
+<p>Does not measure <strong>calibration</strong> (how closely the predicted probabilities match actual risk)</p>
+</div><div class="column" style="width:35%;">
+<p><img data-src="ROC_curve.png"></p>
+</div>
+</div>
+</section>
+<section id="performance-in-train-test-validate-data" class="slide level2">
+<h2>Performance in train, test, validate data</h2>
+<ul>
+<li><p>Performance on <u><strong>training data</strong></u> optimistic due to overfitting</p>
+<ul>
+<li>Use for nothing</li>
+</ul></li>
+<li><p>If many models compared, performance of top model on <u><strong>validation data</strong></u> (e.g., cross validation folds) also optimistic</p>
+<ul>
+<li>Use for selection only</li>
+</ul></li>
+<li><p>Performance on <u><strong>test data</strong></u> only unbiased measure of performance</p></li>
+</ul>
+</section>
+<section id="tidymodels" class="slide level2">
+<h2><a href="https://www.tidymodels.org/find/parsnip/">tidymodels</a></h2>
+
+<img data-src="parsnip_models.png" class="r-stretch"></section>
+<section id="random-forest-model" class="slide level2">
+<h2>Random forest model</h2>
+<ul>
+<li><p>Ensembles (combines) many decision trees</p></li>
+<li><p>Uses bootstrap resampling to randomly select which training examples are used in each tree</p></li>
+<li><p>Covariates used for branching each tree also random</p></li>
+<li><p>Trees ‘votes’ are counted to estimate probability of outcome</p></li>
+</ul>
+</section>
+<section id="decision-tree-example" class="slide level2">
+<h2>Decision tree example</h2>
+
+<img data-src="tree-example.svg" class="r-stretch"><p><a href="https://workshops.tidymodels.org">workshops.tidymodels.org</a></p>
+</section>
+<section id="random-forest-in-tidymodels" class="slide level2">
+<h2>Random forest in tidymodels</h2>
+
+<img data-src="rand_forest_parsnip.png" class="r-stretch"></section>
+<section id="random-forest-hyperparameters" class="slide level2">
+<h2>Random forest hyperparameters</h2>
+
+<img data-src="parsnip_RF_arguments.png" class="r-stretch"></section>
+<section id="tuning-random-forest-model" class="slide level2">
+<h2>Tuning random forest model</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="co">#specify a recipe (prediction task as formula; </span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="co">#.  can also include preprocessing)</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>ctg_recipe <span class="ot">&lt;-</span> <span class="fu">recipe</span>(fetal_health<span class="sc">~</span>., <span class="at">data=</span>dt)</span>
+<span id="cb16-4"><a href="#cb16-4"></a></span>
+<span id="cb16-5"><a href="#cb16-5"></a><span class="co">#specify random forest model for tuning</span></span>
+<span id="cb16-6"><a href="#cb16-6"></a>rf_tune_spec <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>(<span class="at">mtry =</span> <span class="fu">tune</span>(),</span>
+<span id="cb16-7"><a href="#cb16-7"></a>                       <span class="at">trees =</span> <span class="dv">1000</span>,</span>
+<span id="cb16-8"><a href="#cb16-8"></a>                       <span class="at">min_n =</span> <span class="fu">tune</span>(),</span>
+<span id="cb16-9"><a href="#cb16-9"></a>                       <span class="at">mode =</span> <span class="st">"classification"</span>)</span>
+<span id="cb16-10"><a href="#cb16-10"></a>rf_tune_spec</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random Forest Model Specification (classification)
+
+Main Arguments:
+  mtry = tune()
+  trees = 1000
+  min_n = tune()
+
+Computational engine: ranger </code></pre>
+</div>
+</div>
+</section>
+<section id="grid-of-hyperparameter-settings" class="slide level2">
+<h2>Grid of hyperparameter settings</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co">#Create grid of hyperparameters for tuning</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a>rf_grid <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(</span>
+<span id="cb18-3"><a href="#cb18-3"></a>  <span class="fu">mtry</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>)),<span class="co">#number of predictors sampled at each split of tree</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a>  <span class="fu">min_n</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">11</span>)),<span class="co">#Minimum datapoints in node for further split</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a>  <span class="at">levels =</span> <span class="dv">3</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a>)</span>
+<span id="cb18-7"><a href="#cb18-7"></a>rf_grid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 2
+   mtry min_n
+  &lt;int&gt; &lt;int&gt;
+1     1     2
+2     5     2
+3    10     2
+4     1     6
+5     5     6
+6    10     6
+7     1    11
+8     5    11
+9    10    11</code></pre>
+</div>
+</div>
+</section>
+<section id="tune-the-random-forest-model" class="slide level2">
+<h2>Tune the random forest model</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co"># Tune the model</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
+<span id="cb20-3"><a href="#cb20-3"></a>rf_tune_results <span class="ot">&lt;-</span> <span class="fu">tune_grid</span>(</span>
+<span id="cb20-4"><a href="#cb20-4"></a>  rf_tune_spec,</span>
+<span id="cb20-5"><a href="#cb20-5"></a>  ctg_recipe,</span>
+<span id="cb20-6"><a href="#cb20-6"></a>  <span class="at">resamples =</span> ctg_folds,</span>
+<span id="cb20-7"><a href="#cb20-7"></a>  <span class="at">grid =</span> rf_grid</span>
+<span id="cb20-8"><a href="#cb20-8"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We have 2 repeats of 3 fold cross validation and 3x3 hyperparameter settings. How many random forest models will we train before selecting the top model?</p>
+</section>
+<section id="compare-auc-by-hyperparameter-setting" class="slide level2">
+<h2>Compare AUC by hyperparameter setting</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">autoplot</span>(rf_tune_results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="EMD601_ML_guest_lecture_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
+<section id="evaluate-top-configuration-in-test-set" class="slide level2">
+<h2>Evaluate top configuration in test set</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">show_best</span>(rf_tune_results, <span class="at">metric=</span><span class="st">"roc_auc"</span>, <span class="at">n=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 8
+   mtry min_n .metric .estimator  mean     n  std_err .config             
+  &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt; &lt;chr&gt;               
+1     5     2 roc_auc binary     0.987     6 0.000290 Preprocessor1_Model2
+2     5     6 roc_auc binary     0.987     6 0.000276 Preprocessor1_Model5
+3     5    11 roc_auc binary     0.986     6 0.000271 Preprocessor1_Model8</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>best_auc <span class="ot">&lt;-</span> <span class="fu">select_best</span>(rf_tune_results, <span class="at">metric =</span> <span class="st">"roc_auc"</span>)</span>
+<span id="cb24-2"><a href="#cb24-2"></a></span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="co">#Specify a model with best hyperparameters</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a>rf_best_spec <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>(<span class="at">mtry =</span> best_auc<span class="sc">$</span>mtry,</span>
+<span id="cb24-5"><a href="#cb24-5"></a>                       <span class="at">trees =</span> <span class="dv">1000</span>,</span>
+<span id="cb24-6"><a href="#cb24-6"></a>                       <span class="at">min_n =</span> best_auc<span class="sc">$</span>min_n,</span>
+<span id="cb24-7"><a href="#cb24-7"></a>                       <span class="at">mode =</span> <span class="st">"classification"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb24-8"><a href="#cb24-8"></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>, <span class="at">importance =</span> <span class="st">"impurity"</span>)</span>
+<span id="cb24-9"><a href="#cb24-9"></a></span>
+<span id="cb24-10"><a href="#cb24-10"></a><span class="co">#Trains top configuration on all training set; predict on test set</span></span>
+<span id="cb24-11"><a href="#cb24-11"></a>rf_test_results <span class="ot">&lt;-</span> <span class="fu">last_fit</span>(</span>
+<span id="cb24-12"><a href="#cb24-12"></a>  rf_best_spec,</span>
+<span id="cb24-13"><a href="#cb24-13"></a>  ctg_recipe,</span>
+<span id="cb24-14"><a href="#cb24-14"></a>  <span class="at">split =</span> ctg_split_strat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="predict-on-test-set" class="slide level2">
+<h2>Predict on test set</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="co">#Estiamte unbiased performance on test set</span></span>
+<span id="cb25-2"><a href="#cb25-2"></a>rf_test_results <span class="sc">%&gt;%</span> <span class="fu">collect_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 4
+  .metric  .estimator .estimate .config             
+  &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
+1 accuracy binary         0.951 Preprocessor1_Model1
+2 roc_auc  binary         0.986 Preprocessor1_Model1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="co"># Compare predicted risk to actual outcome</span></span>
+<span id="cb27-2"><a href="#cb27-2"></a>preds <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">extract_workflow</span>(rf_test_results), <span class="fu">testing</span>(ctg_split_strat), <span class="at">type=</span><span class="st">"prob"</span>)</span>
+<span id="cb27-3"><a href="#cb27-3"></a>dt_pred_outcome <span class="ot">&lt;-</span> <span class="fu">cbind</span>(preds,</span>
+<span id="cb27-4"><a href="#cb27-4"></a>                         <span class="at">truth =</span><span class="fu">testing</span>(ctg_split_strat)<span class="sc">$</span>fetal_health)</span>
+<span id="cb27-5"><a href="#cb27-5"></a><span class="fu">head</span>(dt_pred_outcome,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  .pred_Abnormal .pred_Normal    truth
+1       0.933500     0.066500 Abnormal
+2       0.625500     0.374500 Abnormal
+3       0.000000     1.000000   Normal
+4       0.201500     0.798500 Abnormal
+5       0.341875     0.658125   Normal</code></pre>
+</div>
+</div>
+</section>
+<section id="plot-the-roc-curve" class="slide level2">
+<h2>Plot the ROC curve</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>roc <span class="ot">&lt;-</span> <span class="fu">roc_curve</span>(dt_pred_outcome, </span>
+<span id="cb29-2"><a href="#cb29-2"></a>                 truth, </span>
+<span id="cb29-3"><a href="#cb29-3"></a>                 .pred_Abnormal)</span>
+<span id="cb29-4"><a href="#cb29-4"></a><span class="fu">head</span>(roc, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+  .threshold specificity sensitivity
+       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+1  -Inf            0               1
+2     0            0               1
+3     0.0005       0.190           1
+4     0.001        0.211           1
+5     0.0015       0.290           1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="co">#autoplot(roc)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="EMD601_ML_guest_lecture_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="assess-calibration" class="slide level2">
+<h2>Assess calibration</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>calibration_obj <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">calibration</span>(truth <span class="sc">~</span> .pred_Abnormal, </span>
+<span id="cb32-2"><a href="#cb32-2"></a>                                      <span class="at">data =</span> dt_pred_outcome,</span>
+<span id="cb32-3"><a href="#cb32-3"></a>                                      <span class="at">cuts =</span> <span class="dv">6</span>)</span>
+<span id="cb32-4"><a href="#cb32-4"></a><span class="fu">ggplot</span>(calibration_obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="EMD601_ML_guest_lecture_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section>
+<section id="plot-variable-importance" class="slide level2">
+<h2>Plot variable importance</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>rf_test_results <span class="sc">|&gt;</span></span>
+<span id="cb33-2"><a href="#cb33-2"></a>  <span class="fu">extract_fit_parsnip</span>() <span class="sc">|&gt;</span></span>
+<span id="cb33-3"><a href="#cb33-3"></a>  <span class="fu">vip</span>(<span class="at">num_features =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="EMD601_ML_guest_lecture_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"></section>
+<section id="model-development-takeaways" class="slide level2">
+<h2>Model development takeaways</h2>
+<ul>
+<li><p>Model development separates model training, validation/comparison/selection, and testing</p></li>
+<li><p>Only unbiased performance estimate comes from test data not used for training or selection</p></li>
+<li><p>For applied ML, rigorous model development more important than in-depth understanding of algorithms</p></li>
+</ul>
+</section>
+<section id="agenda-2" class="slide level2">
+<h2>Agenda</h2>
+<ul>
+<li>Types of supervised learning</li>
+<li>Model development and selection</li>
+<li><strong>Clinically useful models</strong></li>
+</ul>
+</section>
+<section id="switching-to-powerpoint" class="slide level2">
+<h2>Switching to Powerpoint</h2>
+<p>Link here</p>
 <div class="footer footer-default">
 
 </div>
