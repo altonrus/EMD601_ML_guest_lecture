@@ -9,10 +9,14 @@ First we load packages.
 
 ```{r}
 #| echo: true
+#| output: false
+
 # install.packages("tidyverse","tidymodels", "ranger")
 library(tidyverse)
 library(tidymodels)
 library(ranger) #random forest engine
+library(glmnet) #elasticnet engine
+library(xgboost) #boosted trees engine
 theme_set(theme_bw())
 ```
 
@@ -38,7 +42,7 @@ Dataset: [Fetal Health Classigication on Kaggle](https://www.kaggle.com/datasets
 
 ## Read and format the data
 
-```{r}
+```{r read_data}
 #| echo: true
 
 dt <- read_csv("fetal_health.csv") |>
@@ -52,8 +56,14 @@ ctg_recipe <- recipe(fetal_health~., data=dt)
 
 ## Data splitting
 
-```{r}
+```{r split_data}
 #| echo: true
+
+#Split whole data into test and training, stratifying on the outcome
+set.seed(456)
+ctg_split_strat <- initial_split(dt, prop = 0.8 ,strata = fetal_health)
+
+#Create cross validation folds in test set
 set.seed(456)
 ctg_folds <- vfold_cv(training(ctg_split_strat), 
          v=3, #three folds
@@ -65,15 +75,14 @@ ctg_folds <- vfold_cv(training(ctg_split_strat),
 
 ### Random forest (example from lecture)
 
-```{r}
+```{r tune_rf}
 #| echo: true
-
-
 
 #specify random forest model for tuning
 rf_tune_spec <- rand_forest(mtry = tune(),
                        trees = 1000,
                        min_n = tune(),
+                       mode = "classification")
 
 rf_grid <- grid_regular(
   mtry(range = c(5, 15)),#number of predictors sampled at each split of tree
@@ -92,7 +101,7 @@ rf_tune_results <- tune_grid(
 
 autoplot(rf_tune_results)
 
-show_best()
+show_best(rf_tune_results, metric = "roc_auc")
 ```
 
 ### Elasticnet
@@ -101,22 +110,32 @@ https://parsnip.tidymodels.org/reference/logistic_reg.html
 
 It's just logistic regression but with one or two penalties to prevent overfitting, called regularization. Matters more when more covariates are available. For our problem, we have 21 covariates. However, if we wanted, we could include all pairwise interactions between covariates, increasing the number of covariates to 21 + 210 = 231 covariates, in which case logistic regression may overfit without regularization.
 
-```{r}
+```{r tune_en}
 #| echo: true
 
-#specify a recipe for all individual variables AND pairwise interaction terms
-ctg_recipe_interactions <- recipe(fetal_health~.^2, data=dt) 
-
-#specify random forest model for tuning
-en_tune_spec <- rand_forest(mtry = tune(),
-                       trees = 1000,
-                       min_n = tune(),
+#specify elasticnet model for tuning
+en_tune_spec <- logistic_reg(penalty = tune(),
+                       mixture = tune(),
+                       mode = "classification",
+                       engine = "glmnet")
 
 en_grid <- expand_grid(
   mixture = c(0, .33, .66, 1), #1 = lasso model, 0=ridge model
   penalty = c(0.1, 0.01, 0.001) #size of penalty
 )
 en_grid
+
+set.seed(456)
+en_tune_results <- tune_grid(
+  en_tune_spec,
+  ctg_recipe,
+  resamples = ctg_folds,
+  grid = en_grid
+)
+
+autoplot(en_tune_results)
+
+show_best(en_tune_results, metric = "roc_auc")
 ```
 
 ### Gradient boosted machines
@@ -127,6 +146,86 @@ Like random forest, it's an ensemble of trees.
 
 https://parsnip.tidymodels.org/reference/boost_tree.html
 
+```{r tune_gbm}
+#| echo: true
+
+#specify random forest model for tuning
+gbm_tune_spec <- boost_tree(mtry = tune(),
+                            trees = 1000,
+                            min_n = tune(),
+                            tree_depth = tune(),
+                            stop_iter = 3,
+                            mode = "classification")
+
+gbm_grid <- grid_regular(
+  mtry(range = c(5, 15)),#number of predictors sampled at each split of tree
+  min_n(range = c(2, 8)),
+  tree_depth(range = c(3, 9)),
+  levels = 3
+)
+gbm_grid
+
+set.seed(456)
+gbm_tune_results <- tune_grid(
+  gbm_tune_spec,
+  ctg_recipe,
+  resamples = ctg_folds,
+  grid = gbm_grid
+)
+
+autoplot(gbm_tune_results)
+
+show_best(gbm_tune_results, metric = "roc_auc")
+```
+
 ### Model selection
 
+Show top performance across all 3 algorithms
+
+```{r select_top_model}
+#| echo: true
+show_best(rf_tune_results)
+show_best(en_tune_results)
+show_best(gbm_tune_results)
+```
+
+Train top model on full data
+
+```{r train_on_test_set}
+#| echo: true
+best_auc <- select_best(rf_tune_results, metric = "roc_auc")
+
+#Specify a model with best hyperparameters
+rf_best_spec <- rand_forest(mtry = best_auc$mtry,
+                       trees = 1000,
+                       min_n = best_auc$min_n,
+                       mode = "classification") |>
+  set_engine("ranger", importance = "impurity")
+
+#Trains top configuration on all training set; predict on test set
+rf_test_results <- last_fit(
+  rf_best_spec,
+  ctg_recipe,
+  split = ctg_split_strat)
+
+```
+
 ### Unbiased performance of top model
+
+```{r eval_on_test_set}
+#| echo: true
+#Estiamte unbiased performance on test set
+rf_test_results %>% collect_metrics()
+# Compare predicted risk to actual outcome
+preds <- predict(extract_workflow(rf_test_results), testing(ctg_split_strat), type="prob")
+dt_pred_outcome <- cbind(preds,
+                         truth =testing(ctg_split_strat)$fetal_health)
+head(dt_pred_outcome,5)
+
+roc <- roc_curve(dt_pred_outcome, 
+                 truth, 
+                 .pred_Abnormal)
+head(roc, 5)
+
+autoplot(roc)
+```
