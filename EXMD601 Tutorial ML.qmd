@@ -1,0 +1,458 @@
+---
+title: "EXMD601 Tutorial Machine Learning"
+author: "Yannan Shen"
+format:
+  html:
+    toc: true
+    toc-location: left
+    toc-depth: 4
+    theme: default
+---
+
+## Overview
+
+This week we had two introductory lectures of supervised and unsupervised learning. Today, we will proceed with our study of machine learning and this tutorial aims to help you with the conceptual understanding these two types of machine learning.
+
+We will go through two examples mentioned in the lectures and see how they are implemented in R. We hope the example code could be useful as starter code for those are interested in implement these methods in your final project or own research. However, the primary focus of this tutorial is on the overall workflow, as well as the advantages and limitations of supervised and unsupervised learning, rather than the technical details.
+
+**Acknowledgement**
+
+Code from Dr. Alton Russell and Dr. Qihuang Zhang.
+
+## R packages
+
+```{r,message=FALSE}
+## Load R packages
+# install.packages("tidyverse","tidymodels", "ranger")
+library(tidyverse)
+library(tidymodels) #modeling and machine learning using tidyverse principles
+library(ranger) #random forest engine
+library(glmnet) #elasticnet engine
+library(xgboost) #boosted trees engine
+library(flextable) #print tables
+library(factoextra) #
+
+theme_set(theme_bw())
+```
+
+[`tidymodels`](https://www.tidymodels.org/packages/)
+
+The group of packages that make up tidymodels do not implement statistical models themselves. Instead, they focus on making all the tasks around fitting the model much easier. ![Model steps and corresponding tidymodels packages](tidymodels.png) Image: <https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/>
+
+## Supervised learning
+
+Supervised learning is a type of machine learning where the algorithm is trained on a labeled dataset. The dataset includes both input variables (features) and an output variable (target) that we want to predict. It is called “supervised” because of the presence of the outcome variable to guide the learning process. The goal is to make accurate predictions for new, never-before-seen data. Supervised learning is used whenever we want to predict a certain outcome from a given input, and we have examples of input/output pairs.
+
+### Workflow
+
+The workflow of model development
+
+0.  Prediction question, data and model configurations;
+1.  Split the data;
+2.  Train the models on **training data**;
+3.  Select the best model based on model performance on **validation data**;
+4.  Evaluate unbiased model performance using **testing data**;
+
+### Example: predict fetal health
+
+**Cardiotocograms (CTGs)** are a simple and cost accessible option to assess fetal health, allowing healthcare professionals to take action in order to prevent child and maternal mortality. The equipment itself works by sending ultrasound pulses and reading its response, thus shedding light on fetal heart rate (FHR), fetal movements, uterine contractions and more.
+
+#### Data
+
+This dataset contains 2126 records of features extracted from Cardiotocogram exams.
+
+-   Outcome: **fetal health**
+    -   classified by three expert obstetritians into 3 classes: **normal**, **suspect**, and **pathological**.
+    -   Recategorized: **normal** vs. **abnormal** (suspect or pathological)
+-   Predictors: 21 features about fetal heart rate (FHR), fetal movements, uterine contractions and more.
+
+::: columns
+::: {.column width="50%"}
+![](CTG_device.jpeg)
+:::
+
+::: {.column width="50%"}
+![](CTG_output.jpeg)
+:::
+:::
+
+Dataset: [Fetal Health Classigication on Kaggle](https://www.kaggle.com/datasets/andrewmvd/fetal-health-classification). Images: [Thinkstock](https://www.babycenter.in/x1045384/what-is-cardiotocography-ctg-and-why-do-i-need-it); [geekymedics.com](https://geekymedics.com/how-to-read-a-ctg/)
+
+#### Algorithms
+
+We would like to use this data to develop supervised machine learning to predict fetal health. We start with 3 supervised learning algorithms:
+
+-   **Random forest**
+
+    -   Number of predictors sampled at each split of tree
+    -   Minimum data points in node for further split
+
+-   **Elasticnet**
+
+<https://parsnip.tidymodels.org/reference/logistic_reg.html>
+
+It's just logistic regression but with one or two penalties to prevent overfitting, called regularization. Matters more when more covariates are available. For our problem, we have 21 covariates. However, if we wanted, we could include all pairwise interactions between covariates, increasing the number of covariates to 21 + 210 = 231 covariates, in which case logistic regression may overfit without regularization.
+
+-   Size of penalty
+
+-   Mixture of lasso model and ridge model
+
+-   **Gradient boosted machines**
+
+Like random forest, it's an ensemble of trees. The main difference between random forests and gradient boosting lies in how the decision trees are created and aggregated. Unlike random forests, the decision trees in gradient boosting are built one after another.
+
+<https://parsnip.tidymodels.org/reference/boost_tree.html>
+
+-   Number of predictors sampled at each split of tree
+-   Minimum data points in node for further split
+-   Maximum depth of the tree (i.e. number of splits)
+
+#### Read and format the data
+
+```{r read_data}
+#| echo: true
+
+dt <- read.csv("fetal_health.csv") |>
+  mutate(fetal_health = as.factor(ifelse(fetal_health==1,"Normal", "Abnormal")))
+str(dt)
+summary(dt$fetal_health)
+
+#specify a recipe (what are we predicting, what are the features)
+ctg_recipe <- recipe(fetal_health~., data=dt)
+
+```
+
+#### Data splitting
+
+```{r split_data}
+#| echo: true
+
+#Split whole data into test and training, stratifying on the outcome
+set.seed(456)
+ctg_split_strat <- initial_split(dt, prop = 0.8 ,strata = fetal_health) #creates a single binary split of the data into a training set and testing set
+
+#Create cross validation folds in test set
+set.seed(456)
+ctg_folds <- vfold_cv(training(ctg_split_strat), 
+         v=3, #three folds
+         strata = fetal_health, #stratified on outcome
+         repeats = 2) #two repeats
+```
+
+::: callout-tip
+## Questions
+
+-   What does set.seed serve for?
+-   Why is the data splitting stratified on outcome?
+-   Recall the workflow, how will these subsets of data be used?
+:::
+
+### Model tuning
+
+#### Random forest (example from lecture)
+
+```{r tune_rf}
+#| echo: true
+
+#specify random forest model for tuning
+rf_tune_spec <- rand_forest(mtry = tune(),
+                       trees = 1000,
+                       min_n = tune(),
+                       mode = "classification")
+
+rf_grid <- grid_regular(
+  mtry(range = c(5, 15)),#number of predictors sampled at each split of tree
+  min_n(range = c(2, 8)),#Minimum datapoints in node for further split
+  levels = 3
+)
+rf_grid
+
+# computes a set of performance metrics for a pre-defined set of tuning parameters 
+set.seed(456)
+rf_tune_results <- tune_grid(
+  rf_tune_spec, # model specification
+  ctg_recipe, # model formula or recipe
+  resamples = ctg_folds, # splitted data
+  grid = rf_grid # tuning combinations
+)
+
+autoplot(rf_tune_results) # plot performance metrics
+
+show_best(rf_tune_results, metric = "roc_auc") # display the top sub-models based on AUC
+```
+
+#### Elasticnet
+
+```{r tune_en}
+#| echo: true
+
+#specify elasticnet model for tuning
+en_tune_spec <- logistic_reg(penalty = tune(),
+                       mixture = tune(),
+                       mode = "classification",
+                       engine = "glmnet")
+
+en_grid <- expand_grid(
+  mixture = c(0, .33, .66, 1), #1 = lasso model, 0=ridge model
+  penalty = c(0.1, 0.01, 0.001) #size of penalty
+)
+en_grid
+
+set.seed(456)
+en_tune_results <- tune_grid(
+  en_tune_spec,
+  ctg_recipe,
+  resamples = ctg_folds,
+  grid = en_grid
+)
+
+autoplot(en_tune_results)
+
+show_best(en_tune_results, metric = "roc_auc")
+```
+
+#### Gradient boosted machines
+
+```{r tune_gbm}
+#| echo: true
+
+#specify random forest model for tuning
+gbm_tune_spec <- boost_tree(mtry = tune(),
+                            trees = 1000,
+                            min_n = tune(),
+                            tree_depth = tune(),
+                            stop_iter = 3,
+                            mode = "classification")
+
+gbm_grid <- grid_regular(
+  mtry(range = c(5, 15)),#number of predictors sampled at each split of tree
+  min_n(range = c(2, 8)),
+  tree_depth(range = c(3, 9)),
+  levels = 3
+)
+gbm_grid
+
+set.seed(456)
+gbm_tune_results <- tune_grid(
+  gbm_tune_spec,
+  ctg_recipe,
+  resamples = ctg_folds,
+  grid = gbm_grid
+)
+
+autoplot(gbm_tune_results)
+
+show_best(gbm_tune_results, metric = "roc_auc")
+```
+
+### Model selection
+
+Show top performance across all 3 algorithms
+
+```{r select_top_model}
+#| echo: true
+show_best(rf_tune_results)
+show_best(en_tune_results)
+show_best(gbm_tune_results)
+```
+
+Train top model on full data
+
+```{r train_on_test_set}
+#| echo: true
+best_auc <- select_best(rf_tune_results, metric = "roc_auc")
+
+#Specify a model with best hyperparameters
+rf_best_spec <- rand_forest(mtry = best_auc$mtry,
+                       trees = 1000,
+                       min_n = best_auc$min_n,
+                       mode = "classification") |>
+  set_engine("ranger", importance = "impurity")
+
+#Trains top configuration on all training set; predict on test set
+rf_test_results <- last_fit(
+  rf_best_spec,
+  ctg_recipe,
+  split = ctg_split_strat)
+
+```
+
+::: callout-tip
+## Questions
+
+-   Why do we refit the model on full data?
+-   How do you interpret the model performance on the test data?
+-   What are the limitations of selecting model based on AUC?
+:::
+
+### Unbiased performance of top model
+
+```{r eval_on_test_set}
+#| echo: true
+#Estiamte unbiased performance on test set
+rf_test_results %>% collect_metrics()
+# Compare predicted risk to actual outcome
+preds <- predict(extract_workflow(rf_test_results), testing(ctg_split_strat), type="prob")
+dt_pred_outcome <- cbind(preds,
+                         truth =testing(ctg_split_strat)$fetal_health)
+head(dt_pred_outcome,5)
+
+roc <- roc_curve(dt_pred_outcome, 
+                 truth, 
+                 .pred_Abnormal)
+head(roc, 5)
+
+autoplot(roc)
+```
+
+::: callout-tip
+## Questions
+
+-   How do you think these supervised learning algorithms? Would it be potentially helpful for your research?
+-   What are the advantages and limitations of supervised learning?
+:::
+
+### Advantages and limitations (non-exhaustive)
+
+-   Flexibility
+-   Predictive accuracy
+    -   High predictive performance ≠ real-world utility
+-   Training data can be expensive and time-consuming
+-   Black box
+-   Biases and discrimination in the training data
+
+## Unsupervised machine learning
+
+Unsupervised learning is when we just have raw data and are expected to come up with insights without any labels. Our task is to describe how the data are organized or clustered rather than prediction. Clustering analysis is one of the most popular unsupervised learning. In addition to clustering analysis, there are other unsupervised learning techniques such as Principal Component Analysis (PCA) and association rules.
+
+There are lots of different types of clustering algorithms. K-Means clustering is one of the simplest and most commonly used clustering algorithms. It partitions the objects into K mutually exclusive clusters and each cluster is characterized by its centroid.
+
+### Example: clustering cells based on gene expression
+
+We have datasets of 3000 single cells and 214 genes isolated from \>20 mouse cortex and hippocampus areas. In gene expression data, one row is for a cell and one column is for a gene sequence. The values of the matrix represent log of counts (UMI) for that gene (column) expressed in that cell (row). In cell metadata, each row is for a cell and the columns include cell type, where a cell is sampled from and the information about the cell donor.
+
+We would like to explore the heterogeneity of these cells. Can we group the cells into different types or subtypes based on their gene expression? That is, we will conduct K-Means clustering analysis on gene expression data to group these 3000 cells into different clusters. Then, we will use cell data to check whether the resultant clusters make sense.
+
+::: callout-tip
+## Questions
+
+-   How do we decide the value for K?
+-   What do we expect to see in the resultant clusters if the K-Means works perfectly?
+    -   without looking at the cell data
+    -   with cell data available
+:::
+
+### Data
+
+```{r}
+## import necessary data
+
+gene_expressions <- read.csv("sc_gene_expression.csv",
+                             header = T, row.names = 1)
+head(gene_expressions)|>
+  flextable()
+
+cells <- read.csv("data_cells.csv")
+```
+
+### Decide the number of clusters
+
+```{r}
+#create plot of number of clusters vs total within sum of squares
+fviz_nbclust(gene_expressions, kmeans, method = "wss") # "wss": total within sum of square
+```
+
+According to the elbow plot, 5 clusters looks like a good choice!
+
+#### Conduct K-means
+
+```{r}
+### Perform K-means
+set.seed(0)
+km.res <- kmeans(gene_expressions, centers = 5)
+
+print(km.res)
+```
+
+#### Visualize the resultant clusters
+
+```{r}
+### Heatmaps of average gene expression 
+
+heatmap(km.res$centers)
+
+### Compare cluster results with known information
+
+#### Sex
+prop.table(table(cells$donor_sex_label, km.res$cluster), margin = 2)
+
+#### Region
+table_region <- table(cells$region_label, km.res$cluster)
+heatmap(table_region, Colv=NA, Rowv=NA)
+
+
+#### Layer
+heatmap(table(cells$layer_label, km.res$cluster), Colv=NA, Rowv=NA)
+
+
+#### Class
+heatmap(table(cells$class_label, km.res$cluster), Colv=NA, Rowv=NA)
+
+
+```
+
+::: callout-tip
+## Questions
+
+-   What is the most challenging part in K-Means clustering?
+:::
+
+### Key points to consider
+
+When conducting K-Means clustering, here are a few key points needed to be considered.
+
+0.  Clustering question, data and model configurations;
+
+-   Similarity measurement: feature and distance measure;
+-   Clustering algorithms
+-   Number of clusters
+
+1.  Data preparation;
+2.  Run the clustering algorithm;
+3.  Interpret and evaluate the resultant clustering;
+
+-   Internal criterion: high intra-cluster similarity (individuals within a cluster are similar) and low inter-cluster similarity (individuals from different clusters are dissimilar)
+-   External evaluation: introduce external information about the ground truth or human judgement on the data and then measure how well the clustering matches the gold standard classes
+
+::: callout-tip
+## Questions
+
+-   How do you think K-Means clustering? Would it be potentially helpful for your research?
+-   What are the advantages and limitations of K-Means clustering?
+:::
+
+### Advantages and limitations
+
+-   Scalability
+-   Labelled data is not necessary
+-   Interpretation and evaluation for resultant clusters
+-   Sensitive to initialization and outliers
+-   Number of clusters
+
+## Summary
+
+-   **Supervised learning**
+
+    -   Development the model by learning to predict output of interest on labeled examples and deploy the trained model to generate prediction for new unlabeled example.
+    -   Model development separates model training, validation/comparison/selection, and testing.
+    -   Only unbiased performance estimate comes from test data not used for training or selection
+    -   For applied ML, rigorous model development more important than in-depth understanding of algorithms
+    -   Algorithmic breakthroughs in individualized risk prediction have had limited impact on real-world clinical decisions
+    -   High predictive performance ≠ real-world utility
+
+-   **Unsupervised Learning : K-Means Clustering**
+
+    -   Unsupervised learning means to come up with insights of data without any labels.
+    -   K-means clustering partitions the objects into K mutually exclusive clusters and each cluster is characterized by its centroid.
+    -   Carefully choose and justify the number of clusters and measurement of similarity.
+    -   Clusters that make sense

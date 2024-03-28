@@ -1,8 +1,8 @@
 ---
 title: "Supervised ML in clinical applications"
-subtitle: "EXMD 601, McGill University"
+subtitle: "EXMD 601 McGill University"
 author: "Alton Russell"
-date: "20 March 2023"
+date: "27 March 2024"
 format: revealjs
 editor: visual
 ---
@@ -28,27 +28,28 @@ theme_set(theme_bw())
 
 ## Supervised learning in a nutshell
 
--   **Development:** Learn to predict output of interest on **labeled examples** (features + outcome)
+-   **Training:** Learn to predict on **labeled examples**
 
-    -   Complex functions mapping inputs to output
+    -   Model maps features (covariates) to outcome (label)
+    -   Can be complex, non-linear functions
 
--   **Deployment:** Generate prediction for new unlabeled example
+-   **Deployment:** Generate prediction for new examples
 
-![](neutral-network-diagram.svg)
+![](stroke_neural_net_example.png)
 
-## ML vs. statistical modeling
+## ML vs. statistical models
 
 ::: columns
 ::: {.column width="60%"}
--   Relationship between variables learned from data, not pre-specified
+-   Learn relationship between variables from data (not pre-specified)
 
--   Allows complex non-linear relationships
+-   Allow complex non-linear relationships
 
 -   Less interpretable
 
 -   Fewer theoretical guarantees
 
--   Not fit for causal inference! (Except for causal ML)
+-   Generally, not suited for answering causal questions
 :::
 
 ::: {.column width="40%"}
@@ -60,9 +61,7 @@ theme_set(theme_bw())
 
 ::: columns
 ::: {.column width="50%"}
--   Predict continuous outcome
-
--   Examples: hemoglobin level, length of stay
+-   Predict a **continuous** value (hemoglobin level, length of stay)
 
 -   Statistics analog: linear regression
 :::
@@ -75,38 +74,37 @@ theme_set(theme_bw())
 ## "Classification" or risk prediction
 
 ::: columns
-::: {.column width="50%"}
--   Predict categorical event (death, recurrence, rehospitalization)
+::: {.column width="55%"}
+-   Predict a **categorical** outcome/event (death, recurrence, rehospitalization)
 
 -   Statistics analog: logistic regression
 
--   Includes multiclass models (e.g., which of 10 diagnoses is it)
+-   Can be binary (cancer/no cancer) or multiclass (which bacteria is causing the urinary tract infection)
 :::
 
-::: {.column width="50%"}
+::: {.column width="45%"}
 ![](classification_plot.png)
 :::
 :::
 
-## Dichotomania
+## Classifying vs. predicting risk
 
--   Strict classification only returns the most likely class
+-   Strict classification returns the most likely outcome
 
     -   "Patient will get pneumonia"
+    -   Ignores uncertainty 😔
 
 -   Estimated risk \>\> strict classification
 
-    -   51% vs. 99% chance of pneumonia is different
+    -   51% vs. 99% chance of pneumonia can have very different clinical implications
 
-    -   Optimal clinical decision often differs based on risk (e.g., do nothing, treat or conduct additional test) and other variables
-
--   [**Always**]{.underline} question value and viability models that don't give estimated risk
+    -   [**Always**]{.underline} question classification models that don't provide ***probabilistic*** estimates
 
 ## Visualizing estimated risk
 
 ![](pdp-cervical-2d.jpeg)
 
-[Interpretable Machine Learning by Molnar](https://christophm.github.io/interpretable-ml-book/)
+[Interpretable Machine Learning by Molnar](https://christophm.github.io/interpretable-ml-book/) (partial dependency plot showing probability of cervical cancer given the interactino between age and number of pregnancies)
 
 ## Computer vision
 
@@ -129,6 +127,24 @@ theme_set(theme_bw())
 [Kundu et. al. 2021](https://doi.org/10.1371/journal.pone.0256630)
 :::
 :::
+
+## Generative AI/Large language models
+
+::: columns
+::: {.column width="70%"}
+![](LLM_model_tuning.png)
+:::
+
+::: {.column width="30%"}
+-   Trained to mimic human text.
+
+-   Prone to bias and can 'hallucinate'!
+
+-   Can save time with vetting by expert
+:::
+:::
+
+[Thirunavukarasu et. al. Nature Medicine 2023](https://doi.org/10.1038/s41591-023-02448-8)
 
 ## Agenda
 
@@ -164,7 +180,7 @@ dt <- read_csv("fetal_health.csv") |>
 str(dt)
 ```
 
-## Overfitting
+## Model development must avoid over-/under-fitting
 
 ![](overfitting_classifier.jpeg)
 
@@ -172,7 +188,7 @@ str(dt)
 
 ## Holding out a test set
 
--   Allocate some of your data as the hold out test set
+-   At start, set aside some data as test set
 
 -   Use the remaining data to train model
 
@@ -188,12 +204,15 @@ set.seed(125) #for reproducibility
 ctg_split <- initial_split(dt, prop = 0.8)
 ctg_split
 
-#Distribution of outcome in train and test sets
+#Distribution of outcome in training sets
 table(training(ctg_split)$fetal_health)/nrow(training(ctg_split))
+#Distribution of outcome in test sets
 table(testing(ctg_split)$fetal_health)/nrow(testing(ctg_split))
 ```
 
-## Stratified split
+## Stratifying data split
+
+Stratifying is easy and ensures data in each split are representative
 
 ```{r}
 #| echo: true
@@ -202,40 +221,23 @@ table(testing(ctg_split)$fetal_health)/nrow(testing(ctg_split))
 set.seed(456)
 ctg_split_strat <- initial_split(dt, prop = 0.8 ,strata = fetal_health)
 
-#Distribution of outcome in train and test sets
+#Distribution of outcome in training sets
 table(training(ctg_split_strat)$fetal_health)/nrow(training(ctg_split_strat))
+#Distribution of outcome in test sets
 table(testing(ctg_split_strat)$fetal_health)/nrow(testing(ctg_split_strat))
 ```
 
-Stratifying is easy to do and can help ensure data is representative across splits
-
 ## Model selection
 
--   If training one model, can train on full training data
+-   If trying just one model configuration, use full training data
 
--   Usually, want to compare several **model configurations** and select the best one
-
--   Model configuration = algorithm + hyperparameters
+-   Usually, want to select best model from several **configurations** (algorithm + hyperparameters)
 
     -   Algorithm: type of model (e.g., random forest)
 
-    -   Hyperparameter: a 'setting' of that model (e.g., minimum node size)
+    -   Hyperparameter: 'setting' of that model (e.g., minimum node size)
 
--   Requires further splitting of training data to separate training and validation tasks.
-
-## Cross validation
-
-Randomly assign each row of data to a 'fold'
-
-![](three-CV.svg)
-
-[workshops.tidymodels.org](https://workshops.tidymodels.org)
-
-## Cross validation
-
-![](three-CV-iter.svg)
-
-[workshops.tidymodels.org](https://workshops.tidymodels.org)
+-   Further steps needed to avoid biased model selection in training data
 
 ## Cross validation
 
@@ -243,7 +245,32 @@ Randomly assign each row of data to a 'fold'
 
 [Statology](https://www.statology.org/validation-set-vs-test-set/)
 
+## Cross validation
+
+Randomly assign each example to a 'fold'
+
+![](three-CV.svg)
+
+[workshops.tidymodels.org](https://workshops.tidymodels.org)
+
+## Cross validation
+
+::: columns
+::: {.column width="75%"}
+
+![](three-CV-iter.svg)
+:::
+
+::: {.column width="25%"}
+Select model with the best **average** performance across each CV fold
+:::
+:::
+
+[workshops.tidymodels.org](https://workshops.tidymodels.org)
+
 ## Split training set for cross validation
+
+Multiple repeats of CV can further protect against choosing a model that 'got lucky'.
 
 ```{r}
 #| echo: true
@@ -259,8 +286,8 @@ ctg_folds
 
 -   Performance metrics identify how 'good' the model is for given dataset
 
-    -   Perfectly predicts outcome = perfect performance
-    -   Error metrics: smaller is better
+    -   Perfectly predicting outcome = perfect performance
+    -   Error metrics: smaller is better (0 error = perfect)
     -   Positive metrics: bigger is better
 
 -   Metrics differ for regression vs. classification
@@ -269,7 +296,7 @@ ctg_folds
 
 ::: columns
 ::: {.column width="50%"}
-Per each example, error is difference between actual outcome $y$ and predicted outcome $\hat{y}$
+For each example, error is difference between actual outcome $y$ and predicted outcome $\hat{y}$
 
 -   Mean absolute error: $\frac{1}{n} \sum \mid y - \hat{y} \mid$
 -   Mean squared error: $\frac{1}{n} \sum [y - \hat{y}]^2$
@@ -303,13 +330,15 @@ Many metrics derived from it
 :::
 :::
 
-Often don't want to dichotomize in model selection for clinical prediction tasks.
+::: callout-caution
+## Often, we do not want to dichotomize before selecting a model
+:::
 
 ## Area under the ROC curve
 
 ::: columns
 ::: {.column width="60%"}
-Measure of **discrimination**: Higher if the examples with a positive outcome were assigned a hgiher risk score
+Measure of **discrimination**: Higher if the examples with a positive outcome were assigned a higher risk score
 
 -   -,-,-,-,-,+,+,+,+ $\rightarrow$ AUC=1 (perfectly discriminated +'s from -'s)
 
@@ -329,7 +358,7 @@ Does not measure **calibration** (how closely the predicted probabilities match 
 
     -   Use for nothing
 
--   If many models compared, performance of top model on [**validation data**]{.underline} (e.g., cross validation folds) also optimistic
+-   Top model performance on **validation data** (e.g., cross validation folds) can still be optimistic if many configurations assessed
 
     -   Use for selection only
 
@@ -343,17 +372,19 @@ Does not measure **calibration** (how closely the predicted probabilities match 
 
 -   Ensembles (combines) many decision trees
 
--   Uses bootstrap resampling to randomly select which training examples are used in each tree
+-   To develop each tree, model randomly selects:
 
--   Covariates used for branching each tree also random
+    -   Which training examples to use (bootstrapping)
 
--   Trees' 'votes' are counted to estimate probability of outcome
+    -   Random subset of covariates to consider for each branch
+
+-   Tree 'votes' are counted to estimate probability of outcome
 
 ## Decision tree example
 
 ![](tree-example.svg)
 
-[workshops.tidymodels.org](https://workshops.tidymodels.org)
+Outcome: hockey shot on goal. [workshops.tidymodels.org](https://workshops.tidymodels.org)
 
 ## Random forest in tidymodels
 
@@ -393,7 +424,7 @@ rf_grid <- grid_regular(
 rf_grid
 ```
 
-## Tune the random forest model
+## Develop & select random forest model
 
 ```{r}
 #| echo: true
@@ -407,7 +438,11 @@ rf_tune_results <- tune_grid(
 )
 ```
 
-We have 2 repeats of 3 fold cross validation and 3x3 hyperparameter settings. How many random forest models will we train before selecting the top model?
+-   2 repeats of 3 fold cross validation
+
+-   Grid search \[5,10,15\] as \# randomly-selected predictors at each branch and \[2, 5, 8\] as minimum node size
+
+How many random forest models will we train before selecting the top model?
 
 ## Compare AUC by hyperparameter setting
 
@@ -441,7 +476,7 @@ rf_test_results <- last_fit(
 
 ```{r}
 #| echo: true
-#Estiamte unbiased performance on test set
+# Estimate unbiased performance on test set
 rf_test_results %>% collect_metrics()
 # Compare predicted risk to actual outcome
 preds <- predict(extract_workflow(rf_test_results), testing(ctg_split_strat), type="prob")
@@ -459,7 +494,7 @@ head(dt_pred_outcome,5)
 roc <- roc_curve(dt_pred_outcome, 
                  truth, 
                  .pred_Abnormal)
-head(roc, 5)
+head(roc, 9)
 #autoplot(roc)
 ```
 :::
@@ -484,6 +519,22 @@ calibration_obj <- caret::calibration(truth ~ .pred_Abnormal,
 ggplot(calibration_obj)
 ```
 
+::: columns
+::: {.column width="60%"}
+```{r}
+#| echo: false
+ggplot(calibration_obj)
+
+```
+:::
+
+::: {.column width="40%"}
+-   For perfectly calibrated model, midpoint of bins fall on the diagonal line
+
+-   Interpretation: risk predictions above \~12% may be overestimates
+:::
+:::
+
 ## Plot variable importance
 
 ```{r}
@@ -496,11 +547,11 @@ rf_test_results |>
 
 ## Model development takeaways
 
--   Model development separates model training, validation/comparison/selection, and testing
+-   Separates training, validation/comparison/selection, and testing to avoid over-/under-fitting
 
--   Only unbiased performance estimate comes from test data not used for training or selection
+-   Unbiased performance estimate comes from test data not used for training or selection
 
--   For applied ML, rigorous model development more important than in-depth understanding of algorithms
+-   In most applied projects, rigorous model development \>\>\> in-depth understanding of algorithms
 
 ## Agenda
 
