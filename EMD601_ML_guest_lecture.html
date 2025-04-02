@@ -8,10 +8,10 @@
 <link href="EMD601_ML_guest_lecture_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="EMD601_ML_guest_lecture_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="EMD601_ML_guest_lecture_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.3.330">
+  <meta name="generator" content="quarto-1.5.47">
 
   <meta name="author" content="Alton Russell">
-  <meta name="dcterms.date" content="2024-03-27">
+  <meta name="dcterms.date" content="2025-04-02">
   <title>Supervised ML in clinical applications</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -32,7 +32,7 @@
     }
     /* CSS for syntax highlighting */
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span { line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -43,7 +43,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -71,7 +71,7 @@
     code span.at { color: #657422; } /* Attribute */
     code span.bn { color: #ad0000; } /* BaseN */
     code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
     code span.ch { color: #20794d; } /* Char */
     code span.cn { color: #8f5902; } /* Constant */
     code span.co { color: #5e5e5e; } /* Comment */
@@ -85,7 +85,7 @@
     code span.fu { color: #4758ab; } /* Function */
     code span.im { color: #00769e; } /* Import */
     code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; } /* Keyword */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
     code span.op { color: #5e5e5e; } /* Operator */
     code span.ot { color: #003b4f; } /* Other */
     code span.pp { color: #ad0000; } /* Preprocessor */
@@ -96,7 +96,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="EMD601_ML_guest_lecture_files/libs/revealjs/dist/theme/quarto.css" id="theme">
+  <link rel="stylesheet" href="EMD601_ML_guest_lecture_files/libs/revealjs/dist/theme/quarto.css">
   <link href="EMD601_ML_guest_lecture_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="EMD601_ML_guest_lecture_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="EMD601_ML_guest_lecture_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -222,7 +222,8 @@
   }
 
   .callout.callout-titled .callout-body > .callout-content > :last-child {
-    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0;
   }
 
   .callout.callout-titled .callout-icon::before {
@@ -402,18 +403,18 @@ Alton Russell
 </div>
 </div>
 
-  <p class="date">2024-03-27</p>
+  <p class="date">2025-04-02</p>
 </section>
 <section id="r-packages-used" class="slide level2">
 <h2>R packages used</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># install.packages("tidyverse","tidymodels", "ranger")</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(tidymodels)</span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(ranger)</span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">library</span>(caret) <span class="co">#for calibration plot</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="fu">library</span>(vip) <span class="co">#for variable importance plot</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a><span class="co"># install.packages("tidyverse","tidymodels", "ranger")</span></span>
+<span id="cb1-2"><a href=""></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href=""></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-4"><a href=""></a><span class="fu">library</span>(ranger)</span>
+<span id="cb1-5"><a href=""></a><span class="fu">library</span>(caret) <span class="co">#for calibration plot</span></span>
+<span id="cb1-6"><a href=""></a><span class="fu">library</span>(vip) <span class="co">#for variable importance plot</span></span>
+<span id="cb1-7"><a href=""></a><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="agenda" class="slide level2">
@@ -421,7 +422,6 @@ Alton Russell
 <ul>
 <li><strong>Types of supervised learning</strong></li>
 <li>Model development and selection</li>
-<li>Clinically useful models</li>
 </ul>
 </section>
 <section id="supervised-learning-in-a-nutshell" class="slide level2">
@@ -437,7 +437,7 @@ Alton Russell
 
 <img data-src="stroke_neural_net_example.png" class="r-stretch"></section>
 <section id="ml-vs.-statistical-models" class="slide level2">
-<h2>ML vs.&nbsp;statistical models</h2>
+<h2>ML (vs.&nbsp;statistical models)</h2>
 <div class="columns">
 <div class="column" style="width:60%;">
 <ul>
@@ -445,12 +445,11 @@ Alton Russell
 <li><p>Allow complex non-linear relationships</p></li>
 <li><p>Less interpretable</p></li>
 <li><p>Fewer theoretical guarantees</p></li>
-<li><p>Generally, not suited for answering causal questions</p></li>
+<li><p>Not suited for answering causal questions “out of the box”</p></li>
 </ul>
 </div><div class="column" style="width:40%;">
 <p><img data-src="XKCD_ml.png"></p>
-</div>
-</div>
+</div></div>
 </section>
 <section id="regression" class="slide level2">
 <h2>Regression</h2>
@@ -462,8 +461,7 @@ Alton Russell
 </ul>
 </div><div class="column" style="width:50%;">
 <p><img data-src="regression_example.png"></p>
-</div>
-</div>
+</div></div>
 </section>
 <section id="classification-or-risk-prediction" class="slide level2">
 <h2>“Classification” or risk prediction</h2>
@@ -476,8 +474,7 @@ Alton Russell
 </ul>
 </div><div class="column" style="width:45%;">
 <p><img data-src="classification_plot.png"></p>
-</div>
-</div>
+</div></div>
 </section>
 <section id="classifying-vs.-predicting-risk" class="slide level2">
 <h2>Classifying vs.&nbsp;predicting risk</h2>
@@ -489,7 +486,7 @@ Alton Russell
 </ul></li>
 <li><p>Estimated risk &gt;&gt; strict classification</p>
 <ul>
-<li><p>51% vs.&nbsp;99% chance of pneumonia can have very different clinical implications</p></li>
+<li><p>51% vs.&nbsp;99% chance of pneumonia has very different clinical implications!</p></li>
 <li><p><u><strong>Always</strong></u> question classification models that don’t provide <strong><em>probabilistic</em></strong> estimates</p></li>
 </ul></li>
 </ul>
@@ -497,7 +494,7 @@ Alton Russell
 <section id="visualizing-estimated-risk" class="slide level2">
 <h2>Visualizing estimated risk</h2>
 
-<img data-src="pdp-cervical-2d.jpeg" class="r-stretch"><p><a href="https://christophm.github.io/interpretable-ml-book/">Interpretable Machine Learning by Molnar</a> (partial dependency plot showing probability of cervical cancer given the interactino between age and number of pregnancies)</p>
+<img data-src="pdp-cervical-2d.jpeg" class="r-stretch"><p><a href="https://christophm.github.io/interpretable-ml-book/">Interpretable Machine Learning by Molnar</a> (partial dependency plot showing probability of cervical cancer given interaction between age and number of pregnancies)</p>
 </section>
 <section id="computer-vision" class="slide level2">
 <h2>Computer vision</h2>
@@ -515,22 +512,20 @@ Alton Russell
 </div><div class="column" style="width:50%;">
 <p><img data-src="computer_vision_xray.PNG"></p>
 <p><a href="https://doi.org/10.1371/journal.pone.0256630">Kundu et. al.&nbsp;2021</a></p>
-</div>
-</div>
+</div></div>
 </section>
 <section id="generative-ailarge-language-models" class="slide level2">
 <h2>Generative AI/Large language models</h2>
 <div class="columns">
-<div class="column" style="width:70%;">
+<div class="column" style="width:60%;">
 <p><img data-src="LLM_model_tuning.png"></p>
-</div><div class="column" style="width:30%;">
+</div><div class="column" style="width:40%;">
 <ul>
-<li><p>Trained to mimic human text.</p></li>
+<li><p>Trained to mimic patterns in human text by predicting the next word</p></li>
 <li><p>Prone to bias and can ‘hallucinate’!</p></li>
-<li><p>Can save time with vetting by expert</p></li>
+<li><p>Can improve clincal workflows, but require vetting by expert</p></li>
 </ul>
-</div>
-</div>
+</div></div>
 <p><a href="https://doi.org/10.1038/s41591-023-02448-8">Thirunavukarasu et. al.&nbsp;Nature Medicine 2023</a></p>
 </section>
 <section id="agenda-1" class="slide level2">
@@ -538,27 +533,25 @@ Alton Russell
 <ul>
 <li>Types of supervised learning</li>
 <li><strong>Model development and selection</strong></li>
-<li>Clinically useful models</li>
 </ul>
 </section>
 <section id="our-example-data1" class="slide level2">
 <h2>Our example data<sup>1</sup></h2>
-<p>Tabular data derived from <strong>cardiotocography (CTGs)</strong> from 2126 pregnant patients.</p>
-<p>Outcome: fetal health is normal vs.&nbsp;suspect, or pathological.</p>
+<p>Tabular data derived from <strong>cardiotocography (CTGs)</strong> from 2,126 pregnant patients.</p>
+<p>Outcome: fetal health is normal vs.&nbsp;abnormal</p>
 <div class="columns">
 <div class="column" style="width:50%;">
 <p><img data-src="CTG_device.jpeg"></p>
 </div><div class="column" style="width:50%;">
 <p><img data-src="CTG_output.jpeg"></p>
-</div>
-</div>
+</div></div>
 <aside><ol class="aside-footnotes"><li id="fn1"><p>Dataset: <a href="https://www.kaggle.com/datasets/andrewmvd/fetal-health-classification">Fetal health classification on Kaggle</a>. Images: <a href="https://www.babycenter.in/x1045384/what-is-cardiotocography-ctg-and-why-do-i-need-it">Thinkstock</a>; <a href="https://geekymedics.com/how-to-read-a-ctg/">geekymedics.com</a></p></li></ol></aside></section>
 <section id="our-example-data" class="slide level2">
 <h2>Our example data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>dt <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"fetal_health.csv"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">mutate</span>(<span class="at">fetal_health =</span> <span class="fu">as.factor</span>(<span class="fu">ifelse</span>(fetal_health<span class="sc">==</span><span class="dv">1</span>,<span class="st">"Normal"</span>, <span class="st">"Abnormal"</span>)))</span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="fu">str</span>(dt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>dt <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"fetal_health.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href=""></a>  <span class="fu">mutate</span>(<span class="at">fetal_health =</span> <span class="fu">as.factor</span>(<span class="fu">ifelse</span>(fetal_health<span class="sc">==</span><span class="dv">1</span>,<span class="st">"Normal"</span>, <span class="st">"Abnormal"</span>)))</span>
+<span id="cb2-3"><a href=""></a><span class="fu">str</span>(dt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>tibble [2,126 × 22] (S3: tbl_df/tbl/data.frame)
  $ baseline value                                        : num [1:2126] 120 132 133 134 132 134 134 122 122 122 ...
@@ -596,29 +589,29 @@ Alton Russell
 <ul>
 <li><p>At start, set aside some data as test set</p></li>
 <li><p>Use the remaining data to train model</p></li>
-<li><p>At the <u><strong>very end</strong></u>, run <u><strong>only one</strong></u> <u><strong>final model</strong></u> on the test set for an unbiased estimate of performance</p></li>
+<li><p>At the <u><strong>very end</strong></u>, run <u><strong>one</strong></u> <u><strong>final model</strong></u> on the test set for an unbiased estimate of performance</p></li>
 </ul>
 
 <img data-src="train_test_split.png" class="r-stretch"></section>
 <section id="splitting-with-rsample" class="slide level2">
 <h2>Splitting with rsample</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">set.seed</span>(<span class="dv">125</span>) <span class="co">#for reproducibility</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>ctg_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(dt, <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
-<span id="cb4-3"><a href="#cb4-3"></a>ctg_split</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">125</span>) <span class="co">#for reproducibility</span></span>
+<span id="cb4-2"><a href=""></a>ctg_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(dt, <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb4-3"><a href=""></a>ctg_split</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;Training/Testing/Total&gt;
 &lt;1700/426/2126&gt;</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">#Distribution of outcome in training sets</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="fu">table</span>(<span class="fu">training</span>(ctg_split)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">training</span>(ctg_split))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a><span class="co">#Distribution of outcome in training sets</span></span>
+<span id="cb6-2"><a href=""></a><span class="fu">table</span>(<span class="fu">training</span>(ctg_split)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">training</span>(ctg_split))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
  Abnormal    Normal 
 0.2158824 0.7841176 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">#Distribution of outcome in test sets</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="fu">table</span>(<span class="fu">testing</span>(ctg_split)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">testing</span>(ctg_split))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a><span class="co">#Distribution of outcome in test sets</span></span>
+<span id="cb8-2"><a href=""></a><span class="fu">table</span>(<span class="fu">testing</span>(ctg_split)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">testing</span>(ctg_split))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
  Abnormal    Normal 
@@ -628,21 +621,21 @@ Alton Russell
 </section>
 <section id="stratifying-data-split" class="slide level2">
 <h2>Stratifying data split</h2>
-<p>Stratifying is easy and ensures data in each split are representative</p>
+<p>Stratifying is easy and ensures data in each split are representative on the outcome (or other variables)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">#Split while stratifying on outcome</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
-<span id="cb10-3"><a href="#cb10-3"></a>ctg_split_strat <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(dt, <span class="at">prop =</span> <span class="fl">0.8</span> ,<span class="at">strata =</span> fetal_health)</span>
-<span id="cb10-4"><a href="#cb10-4"></a></span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="co">#Distribution of outcome in training sets</span></span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="fu">table</span>(<span class="fu">training</span>(ctg_split_strat)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">training</span>(ctg_split_strat))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a><span class="co">#Split while stratifying on outcome</span></span>
+<span id="cb10-2"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
+<span id="cb10-3"><a href=""></a>ctg_split_strat <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(dt, <span class="at">prop =</span> <span class="fl">0.8</span>, <span class="at">strata =</span> fetal_health)</span>
+<span id="cb10-4"><a href=""></a></span>
+<span id="cb10-5"><a href=""></a><span class="co">#Distribution of outcome in training sets</span></span>
+<span id="cb10-6"><a href=""></a><span class="fu">table</span>(<span class="fu">training</span>(ctg_split_strat)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">training</span>(ctg_split_strat))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
  Abnormal    Normal 
 0.2211765 0.7788235 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">#Distribution of outcome in test sets</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="fu">table</span>(<span class="fu">testing</span>(ctg_split_strat)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">testing</span>(ctg_split_strat))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href=""></a><span class="co">#Distribution of outcome in test sets</span></span>
+<span id="cb12-2"><a href=""></a><span class="fu">table</span>(<span class="fu">testing</span>(ctg_split_strat)<span class="sc">$</span>fetal_health)<span class="sc">/</span><span class="fu">nrow</span>(<span class="fu">testing</span>(ctg_split_strat))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
  Abnormal    Normal 
@@ -653,13 +646,13 @@ Alton Russell
 <section id="model-selection" class="slide level2">
 <h2>Model selection</h2>
 <ul>
-<li><p>If trying just one model configuration, use full training data</p></li>
+<li><p>If trying just one model configuration, can use full training data</p></li>
 <li><p>Usually, want to select best model from several <strong>configurations</strong> (algorithm + hyperparameters)</p>
 <ul>
 <li><p>Algorithm: type of model (e.g., random forest)</p></li>
 <li><p>Hyperparameter: ‘setting’ of that model (e.g., minimum node size)</p></li>
 </ul></li>
-<li><p>Further steps needed to avoid biased model selection in training data</p></li>
+<li><p>Further steps needed to avoid <u><strong>biased model selection</strong></u> in training data</p></li>
 </ul>
 </section>
 <section id="cross-validation" class="slide level2">
@@ -680,20 +673,19 @@ Alton Russell
 <p><img data-src="three-CV-iter.svg"></p>
 </div><div class="column" style="width:25%;">
 <p>Select model with the best <strong>average</strong> performance across each CV fold</p>
-</div>
-</div>
+</div></div>
 <p><a href="https://workshops.tidymodels.org">workshops.tidymodels.org</a></p>
 </section>
 <section id="split-training-set-for-cross-validation" class="slide level2">
 <h2>Split training set for cross validation</h2>
 <p>Multiple repeats of CV can further protect against choosing a model that ‘got lucky’.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
-<span id="cb14-2"><a href="#cb14-2"></a>ctg_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(<span class="fu">training</span>(ctg_split_strat), </span>
-<span id="cb14-3"><a href="#cb14-3"></a>         <span class="at">v=</span><span class="dv">3</span>, <span class="co">#three folds</span></span>
-<span id="cb14-4"><a href="#cb14-4"></a>         <span class="at">strata =</span> fetal_health, <span class="co">#stratified on outcome</span></span>
-<span id="cb14-5"><a href="#cb14-5"></a>         <span class="at">repeats =</span> <span class="dv">2</span>) <span class="co">#two repeats</span></span>
-<span id="cb14-6"><a href="#cb14-6"></a>ctg_folds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
+<span id="cb14-2"><a href=""></a>ctg_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(<span class="fu">training</span>(ctg_split_strat), </span>
+<span id="cb14-3"><a href=""></a>         <span class="at">v=</span><span class="dv">3</span>, <span class="co">#three folds</span></span>
+<span id="cb14-4"><a href=""></a>         <span class="at">strata =</span> fetal_health, <span class="co">#stratified on outcome</span></span>
+<span id="cb14-5"><a href=""></a>         <span class="at">repeats =</span> <span class="dv">2</span>) <span class="co">#two repeats</span></span>
+<span id="cb14-6"><a href=""></a>ctg_folds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#  3-fold cross-validation repeated 2 times using stratification 
 # A tibble: 6 × 3
@@ -708,8 +700,8 @@ Alton Russell
 </div>
 </div>
 </section>
-<section id="evaluating-models" class="slide level2">
-<h2>Evaluating models</h2>
+<section id="evaluating-models-predictive-performance" class="slide level2">
+<h2>Evaluating models’ predictive performance</h2>
 <ul>
 <li><p>Performance metrics identify how ‘good’ the model is for given dataset</p>
 <ul>
@@ -720,8 +712,8 @@ Alton Russell
 <li><p>Metrics differ for regression vs.&nbsp;classification</p></li>
 </ul>
 </section>
-<section id="regression-metrics" class="slide level2">
-<h2>Regression metrics</h2>
+<section id="error-metrics-for-regression" class="slide level2">
+<h2>Error metrics for regression</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <p>For each example, error is difference between actual outcome <span class="math inline">\(y\)</span> and predicted outcome <span class="math inline">\(\hat{y}\)</span></p>
@@ -732,8 +724,7 @@ Alton Russell
 </ul>
 </div><div class="column" style="width:50%;">
 <p><img data-src="rmse_vs_mae.webp"></p>
-</div>
-</div>
+</div></div>
 </section>
 <section id="classification-metrics-confusion-matrix-based" class="slide level2">
 <h2>Classification metrics: confusion matrix-based</h2>
@@ -749,35 +740,21 @@ Alton Russell
 </div><div class="column" style="width:35%;">
 <p><img data-src="confusion_matrix.webp"></p>
 <p><a href="https://medium.com/analytics-vidhya/confusion-matrix-accuracy-precision-recall-f1-score-ade299cf63cd#:~:text=What%20is%20the%20accuracy%20of,the%20accuracy%20will%20be%2085%25.">Harikrishnan N B Medium</a></p>
-</div>
-</div>
-<div class="callout callout-caution callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Often, we do not want to dichotomize before selecting a model</strong></p>
-</div>
-<div class="callout-content">
-
-</div>
-</div>
-</div>
+</div></div>
+<p>Often, we do not want to dichotomize before selecting a model</p>
 </section>
 <section id="area-under-the-roc-curve" class="slide level2">
 <h2>Area under the ROC curve</h2>
 <div class="columns">
 <div class="column" style="width:60%;">
-<p>Measure of <strong>discrimination</strong>: Higher if the examples with a positive outcome were assigned a higher risk score</p>
+<p>Measure of <strong>discrimination</strong>: Higher if the examples with a positive outcome tended to have higher risk scores than negative examples</p>
 <ul>
 <li><p>-,-,-,-,-,+,+,+,+ <span class="math inline">\(\rightarrow\)</span> AUC=1 (perfectly discriminated +’s from -’s)</p></li>
 <li><p>-,+,-,+,-,+,-,+,-,+ <span class="math inline">\(\rightarrow\)</span> AUC = 0.5 (random chance)</p></li>
 </ul>
 </div><div class="column" style="width:40%;">
 <p><img data-src="ROC_curve.png"></p>
-</div>
-</div>
+</div></div>
 <p>Does not measure <strong>calibration</strong> (how closely the predicted probabilities match actual risk)</p>
 </section>
 <section id="performance-in-train-test-validate-data" class="slide level2">
@@ -789,7 +766,7 @@ Alton Russell
 </ul></li>
 <li><p>Top model performance on <strong>validation data</strong> (e.g., cross validation folds) can still be optimistic if many configurations assessed</p>
 <ul>
-<li>Use for selection only</li>
+<li>Use for <u><strong>selection</strong></u></li>
 </ul></li>
 <li><p>Performance on <u><strong>test data</strong></u> only unbiased measure of performance</p></li>
 </ul>
@@ -826,16 +803,16 @@ Alton Russell
 <section id="tuning-random-forest-model" class="slide level2">
 <h2>Tuning random forest model</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="co">#specify a recipe (prediction task as formula; </span></span>
-<span id="cb16-2"><a href="#cb16-2"></a><span class="co">#.  can also include preprocessing)</span></span>
-<span id="cb16-3"><a href="#cb16-3"></a>ctg_recipe <span class="ot">&lt;-</span> <span class="fu">recipe</span>(fetal_health<span class="sc">~</span>., <span class="at">data=</span>dt)</span>
-<span id="cb16-4"><a href="#cb16-4"></a></span>
-<span id="cb16-5"><a href="#cb16-5"></a><span class="co">#specify random forest model for tuning</span></span>
-<span id="cb16-6"><a href="#cb16-6"></a>rf_tune_spec <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>(<span class="at">mtry =</span> <span class="fu">tune</span>(),</span>
-<span id="cb16-7"><a href="#cb16-7"></a>                       <span class="at">trees =</span> <span class="dv">1000</span>,</span>
-<span id="cb16-8"><a href="#cb16-8"></a>                       <span class="at">min_n =</span> <span class="fu">tune</span>(),</span>
-<span id="cb16-9"><a href="#cb16-9"></a>                       <span class="at">mode =</span> <span class="st">"classification"</span>)</span>
-<span id="cb16-10"><a href="#cb16-10"></a>rf_tune_spec</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href=""></a><span class="co">#specify a recipe (prediction task as formula; </span></span>
+<span id="cb16-2"><a href=""></a><span class="co">#.  can also include preprocessing)</span></span>
+<span id="cb16-3"><a href=""></a>ctg_recipe <span class="ot">&lt;-</span> <span class="fu">recipe</span>(fetal_health<span class="sc">~</span>., <span class="at">data=</span>dt)</span>
+<span id="cb16-4"><a href=""></a></span>
+<span id="cb16-5"><a href=""></a><span class="co">#specify random forest model for tuning</span></span>
+<span id="cb16-6"><a href=""></a>rf_tune_spec <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>(<span class="at">mtry =</span> <span class="fu">tune</span>(),</span>
+<span id="cb16-7"><a href=""></a>                       <span class="at">trees =</span> <span class="dv">1000</span>,</span>
+<span id="cb16-8"><a href=""></a>                       <span class="at">min_n =</span> <span class="fu">tune</span>(),</span>
+<span id="cb16-9"><a href=""></a>                       <span class="at">mode =</span> <span class="st">"classification"</span>)</span>
+<span id="cb16-10"><a href=""></a>rf_tune_spec</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Random Forest Model Specification (classification)
 
@@ -851,13 +828,13 @@ Computational engine: ranger </code></pre>
 <section id="grid-of-hyperparameter-settings" class="slide level2">
 <h2>Grid of hyperparameter settings</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co">#Create grid of hyperparameters for tuning</span></span>
-<span id="cb18-2"><a href="#cb18-2"></a>rf_grid <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(</span>
-<span id="cb18-3"><a href="#cb18-3"></a>  <span class="fu">mtry</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">15</span>)),<span class="co">#number of predictors sampled at each split of tree</span></span>
-<span id="cb18-4"><a href="#cb18-4"></a>  <span class="fu">min_n</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">8</span>)),<span class="co">#Minimum datapoints in node for further split</span></span>
-<span id="cb18-5"><a href="#cb18-5"></a>  <span class="at">levels =</span> <span class="dv">3</span></span>
-<span id="cb18-6"><a href="#cb18-6"></a>)</span>
-<span id="cb18-7"><a href="#cb18-7"></a>rf_grid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href=""></a><span class="co">#Create grid of hyperparameters for tuning</span></span>
+<span id="cb18-2"><a href=""></a>rf_grid <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(</span>
+<span id="cb18-3"><a href=""></a>  <span class="fu">mtry</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">15</span>)),<span class="co">#number of predictors sampled at each split</span></span>
+<span id="cb18-4"><a href=""></a>  <span class="fu">min_n</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">8</span>)),<span class="co">#Minimum datapoints in node for further split</span></span>
+<span id="cb18-5"><a href=""></a>  <span class="at">levels =</span> <span class="dv">3</span></span>
+<span id="cb18-6"><a href=""></a>)</span>
+<span id="cb18-7"><a href=""></a>rf_grid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 9 × 2
    mtry min_n
@@ -877,32 +854,32 @@ Computational engine: ranger </code></pre>
 <section id="develop-select-random-forest-model" class="slide level2">
 <h2>Develop &amp; select random forest model</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co"># Tune the model</span></span>
-<span id="cb20-2"><a href="#cb20-2"></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
-<span id="cb20-3"><a href="#cb20-3"></a>rf_tune_results <span class="ot">&lt;-</span> <span class="fu">tune_grid</span>(</span>
-<span id="cb20-4"><a href="#cb20-4"></a>  rf_tune_spec,</span>
-<span id="cb20-5"><a href="#cb20-5"></a>  ctg_recipe,</span>
-<span id="cb20-6"><a href="#cb20-6"></a>  <span class="at">resamples =</span> ctg_folds,</span>
-<span id="cb20-7"><a href="#cb20-7"></a>  <span class="at">grid =</span> rf_grid</span>
-<span id="cb20-8"><a href="#cb20-8"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href=""></a><span class="co"># Tune the model</span></span>
+<span id="cb20-2"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
+<span id="cb20-3"><a href=""></a>rf_tune_results <span class="ot">&lt;-</span> <span class="fu">tune_grid</span>(</span>
+<span id="cb20-4"><a href=""></a>  rf_tune_spec, <span class="co"># tuning specification I made</span></span>
+<span id="cb20-5"><a href=""></a>  ctg_recipe, <span class="co"># "recipe" I defined</span></span>
+<span id="cb20-6"><a href=""></a>  <span class="at">resamples =</span> ctg_folds, <span class="co"># data split for cross validation</span></span>
+<span id="cb20-7"><a href=""></a>  <span class="at">grid =</span> rf_grid <span class="co"># hyperparameters to try</span></span>
+<span id="cb20-8"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li><p>2 repeats of 3 fold cross validation</p></li>
-<li><p>Grid search [5,10,15] as # randomly-selected predictors at each branch and [2, 5, 8] as minimum node size</p></li>
+<li><p>Grid search [5,10,15] as # randomly-selected predictors at each split and [2, 5, 8] as minimum node size</p></li>
 </ul>
 <p>How many random forest models will we train before selecting the top model?</p>
 </section>
 <section id="compare-auc-by-hyperparameter-setting" class="slide level2">
 <h2>Compare AUC by hyperparameter setting</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">autoplot</span>(rf_tune_results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href=""></a><span class="fu">autoplot</span>(rf_tune_results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="EMD601_ML_guest_lecture_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
 <section id="evaluate-top-configuration-in-test-set" class="slide level2">
 <h2>Evaluate top configuration in test set</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">show_best</span>(rf_tune_results, <span class="at">metric=</span><span class="st">"roc_auc"</span>, <span class="at">n=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href=""></a><span class="fu">show_best</span>(rf_tune_results, <span class="at">metric=</span><span class="st">"roc_auc"</span>, <span class="at">n=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 8
    mtry min_n .metric .estimator  mean     n std_err .config             
@@ -911,39 +888,40 @@ Computational engine: ranger </code></pre>
 2     5     5 roc_auc binary     0.984     6 0.00195 Preprocessor1_Model4
 3     5     8 roc_auc binary     0.984     6 0.00179 Preprocessor1_Model7</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>best_auc <span class="ot">&lt;-</span> <span class="fu">select_best</span>(rf_tune_results, <span class="at">metric =</span> <span class="st">"roc_auc"</span>)</span>
-<span id="cb24-2"><a href="#cb24-2"></a></span>
-<span id="cb24-3"><a href="#cb24-3"></a><span class="co">#Specify a model with best hyperparameters</span></span>
-<span id="cb24-4"><a href="#cb24-4"></a>rf_best_spec <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>(<span class="at">mtry =</span> best_auc<span class="sc">$</span>mtry,</span>
-<span id="cb24-5"><a href="#cb24-5"></a>                       <span class="at">trees =</span> <span class="dv">1000</span>,</span>
-<span id="cb24-6"><a href="#cb24-6"></a>                       <span class="at">min_n =</span> best_auc<span class="sc">$</span>min_n,</span>
-<span id="cb24-7"><a href="#cb24-7"></a>                       <span class="at">mode =</span> <span class="st">"classification"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb24-8"><a href="#cb24-8"></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>, <span class="at">importance =</span> <span class="st">"impurity"</span>)</span>
-<span id="cb24-9"><a href="#cb24-9"></a></span>
-<span id="cb24-10"><a href="#cb24-10"></a><span class="co">#Trains top configuration on all training set; predict on test set</span></span>
-<span id="cb24-11"><a href="#cb24-11"></a>rf_test_results <span class="ot">&lt;-</span> <span class="fu">last_fit</span>(</span>
-<span id="cb24-12"><a href="#cb24-12"></a>  rf_best_spec,</span>
-<span id="cb24-13"><a href="#cb24-13"></a>  ctg_recipe,</span>
-<span id="cb24-14"><a href="#cb24-14"></a>  <span class="at">split =</span> ctg_split_strat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href=""></a>best_auc <span class="ot">&lt;-</span> <span class="fu">select_best</span>(rf_tune_results, <span class="at">metric =</span> <span class="st">"roc_auc"</span>)</span>
+<span id="cb24-2"><a href=""></a></span>
+<span id="cb24-3"><a href=""></a><span class="co">#Specify a model with best hyperparameters</span></span>
+<span id="cb24-4"><a href=""></a>rf_best_spec <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>(<span class="at">mtry =</span> best_auc<span class="sc">$</span>mtry,</span>
+<span id="cb24-5"><a href=""></a>                       <span class="at">trees =</span> <span class="dv">1000</span>,</span>
+<span id="cb24-6"><a href=""></a>                       <span class="at">min_n =</span> best_auc<span class="sc">$</span>min_n,</span>
+<span id="cb24-7"><a href=""></a>                       <span class="at">mode =</span> <span class="st">"classification"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb24-8"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>, <span class="at">importance =</span> <span class="st">"impurity"</span>)</span>
+<span id="cb24-9"><a href=""></a></span>
+<span id="cb24-10"><a href=""></a><span class="co">#Train top configuration on full training set; predict on test set</span></span>
+<span id="cb24-11"><a href=""></a>rf_test_results <span class="ot">&lt;-</span> <span class="fu">last_fit</span>(</span>
+<span id="cb24-12"><a href=""></a>  rf_best_spec,</span>
+<span id="cb24-13"><a href=""></a>  ctg_recipe,</span>
+<span id="cb24-14"><a href=""></a>  <span class="at">split =</span> ctg_split_strat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="predict-on-test-set" class="slide level2">
 <h2>Predict on test set</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="co"># Estimate unbiased performance on test set</span></span>
-<span id="cb25-2"><a href="#cb25-2"></a>rf_test_results <span class="sc">%&gt;%</span> <span class="fu">collect_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href=""></a><span class="co"># Estimate unbiased performance on test set</span></span>
+<span id="cb25-2"><a href=""></a>rf_test_results <span class="sc">%&gt;%</span> <span class="fu">collect_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 4
-  .metric  .estimator .estimate .config             
-  &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-1 accuracy binary         0.951 Preprocessor1_Model1
-2 roc_auc  binary         0.992 Preprocessor1_Model1</code></pre>
+<pre><code># A tibble: 3 × 4
+  .metric     .estimator .estimate .config             
+  &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
+1 accuracy    binary        0.951  Preprocessor1_Model1
+2 roc_auc     binary        0.992  Preprocessor1_Model1
+3 brier_class binary        0.0323 Preprocessor1_Model1</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="co"># Compare predicted risk to actual outcome</span></span>
-<span id="cb27-2"><a href="#cb27-2"></a>preds <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">extract_workflow</span>(rf_test_results), <span class="fu">testing</span>(ctg_split_strat), <span class="at">type=</span><span class="st">"prob"</span>)</span>
-<span id="cb27-3"><a href="#cb27-3"></a>dt_pred_outcome <span class="ot">&lt;-</span> <span class="fu">cbind</span>(preds,</span>
-<span id="cb27-4"><a href="#cb27-4"></a>                         <span class="at">truth =</span><span class="fu">testing</span>(ctg_split_strat)<span class="sc">$</span>fetal_health)</span>
-<span id="cb27-5"><a href="#cb27-5"></a><span class="fu">head</span>(dt_pred_outcome,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href=""></a><span class="co"># Compare predicted risk to actual outcome</span></span>
+<span id="cb27-2"><a href=""></a>preds <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">extract_workflow</span>(rf_test_results), <span class="fu">testing</span>(ctg_split_strat), <span class="at">type=</span><span class="st">"prob"</span>)</span>
+<span id="cb27-3"><a href=""></a>dt_pred_outcome <span class="ot">&lt;-</span> <span class="fu">cbind</span>(preds,</span>
+<span id="cb27-4"><a href=""></a>                         <span class="at">truth =</span><span class="fu">testing</span>(ctg_split_strat)<span class="sc">$</span>fetal_health)</span>
+<span id="cb27-5"><a href=""></a><span class="fu">head</span>(dt_pred_outcome,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  .pred_Abnormal .pred_Normal    truth
 1      0.7486667    0.2513333 Abnormal
@@ -959,10 +937,10 @@ Computational engine: ranger </code></pre>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>roc <span class="ot">&lt;-</span> <span class="fu">roc_curve</span>(dt_pred_outcome, </span>
-<span id="cb29-2"><a href="#cb29-2"></a>                 truth, </span>
-<span id="cb29-3"><a href="#cb29-3"></a>                 .pred_Abnormal)</span>
-<span id="cb29-4"><a href="#cb29-4"></a><span class="fu">head</span>(roc, <span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href=""></a>roc <span class="ot">&lt;-</span> <span class="fu">roc_curve</span>(dt_pred_outcome, </span>
+<span id="cb29-2"><a href=""></a>                 truth, </span>
+<span id="cb29-3"><a href=""></a>                 .pred_Abnormal)</span>
+<span id="cb29-4"><a href=""></a><span class="fu">head</span>(roc, <span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 9 × 3
   .threshold specificity sensitivity
@@ -977,33 +955,44 @@ Computational engine: ranger </code></pre>
 8     0.003        0.384           1
 9     0.0035       0.408           1</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="co">#autoplot(roc)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href=""></a><span class="co">#autoplot(roc)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
 <div class="cell-output-display">
+<div>
+<figure>
 <p><img data-src="EMD601_ML_guest_lecture_files/figure-revealjs/unnamed-chunk-13-1.png" width="480"></p>
+</figure>
 </div>
 </div>
 </div>
-</div>
+</div></div>
 </section>
 <section id="assess-calibration" class="slide level2">
 <h2>Assess calibration</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>calibration_obj <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">calibration</span>(truth <span class="sc">~</span> .pred_Abnormal, </span>
-<span id="cb32-2"><a href="#cb32-2"></a>                                      <span class="at">data =</span> dt_pred_outcome,</span>
-<span id="cb32-3"><a href="#cb32-3"></a>                                      <span class="at">cuts =</span> <span class="dv">6</span>)</span>
-<span id="cb32-4"><a href="#cb32-4"></a><span class="fu">ggplot</span>(calibration_obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href=""></a>calibration_obj <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">calibration</span>(truth <span class="sc">~</span> .pred_Abnormal, </span>
+<span id="cb32-2"><a href=""></a>                                      <span class="at">data =</span> dt_pred_outcome,</span>
+<span id="cb32-3"><a href=""></a>                                      <span class="at">cuts =</span> <span class="dv">6</span>)</span>
+<span id="cb32-4"><a href=""></a><span class="fu">ggplot</span>(calibration_obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
+<div>
+<figure>
 <p><img data-src="EMD601_ML_guest_lecture_files/figure-revealjs/unnamed-chunk-14-1.png" width="960"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="columns">
 <div class="column" style="width:60%;">
 <div class="cell">
 <div class="cell-output-display">
+<div>
+<figure>
 <p><img data-src="EMD601_ML_guest_lecture_files/figure-revealjs/unnamed-chunk-15-1.png" width="960"></p>
+</figure>
+</div>
 </div>
 </div>
 </div><div class="column" style="width:40%;">
@@ -1011,39 +1000,39 @@ Computational engine: ranger </code></pre>
 <li><p>For perfectly calibrated model, midpoint of bins fall on the diagonal line</p></li>
 <li><p>Interpretation: risk predictions above ~12% may be overestimates</p></li>
 </ul>
-</div>
-</div>
+</div></div>
 </section>
 <section id="plot-variable-importance" class="slide level2">
 <h2>Plot variable importance</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>rf_test_results <span class="sc">|&gt;</span></span>
-<span id="cb33-2"><a href="#cb33-2"></a>  <span class="fu">extract_fit_parsnip</span>() <span class="sc">|&gt;</span></span>
-<span id="cb33-3"><a href="#cb33-3"></a>  <span class="fu">vip</span>(<span class="at">num_features =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href=""></a>rf_test_results <span class="sc">|&gt;</span></span>
+<span id="cb33-2"><a href=""></a>  <span class="fu">extract_fit_parsnip</span>() <span class="sc">|&gt;</span></span>
+<span id="cb33-3"><a href=""></a>  <span class="fu">vip</span>(<span class="at">num_features =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="EMD601_ML_guest_lecture_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch"></section>
 <section id="model-development-takeaways" class="slide level2">
 <h2>Model development takeaways</h2>
 <ul>
-<li><p>Separates training, validation/comparison/selection, and testing to avoid over-/under-fitting</p></li>
+<li><p>Separate data sub-sets for training, validation/comparison/selection, and testing to avoid over-/under-fitting</p></li>
 <li><p>Unbiased performance estimate comes from test data not used for training or selection</p></li>
-<li><p>In most applied projects, rigorous model development &gt;&gt;&gt; in-depth understanding of algorithms</p></li>
+<li><p>In most applied projects, rigorous model development &gt;&gt;&gt; in-depth understanding of ML algorithms</p></li>
 </ul>
 </section>
-<section id="agenda-2" class="slide level2">
-<h2>Agenda</h2>
-<ul>
-<li>Types of supervised learning</li>
-<li>Model development and selection</li>
-<li><strong>Clinically useful models</strong></li>
-</ul>
-</section>
-<section id="switching-to-powerpoint" class="slide level2">
-<h2>Switching to Powerpoint</h2>
+<section id="bonus-material" class="slide level2">
+<h2>Bonus material</h2>
+<p>Clinically useful supervised learning ML models, in powerpoint</p>
 <p><a href="https://github.com/altonrus/EMD601_ML_guest_lecture/blob/master/clinically_useful_ML_prediction.pptx" class="uri">https://github.com/altonrus/EMD601_ML_guest_lecture/blob/master/clinically_useful_ML_prediction.pptx</a></p>
+</section>
+<section id="thank-you" class="slide level2">
+<h2>Thank you</h2>
+<p>Alton Russell</p>
+<p>alton.russell@mcgill.ca</p>
+<p><a href="https://mchi.mcgill.ca/decision_modeling_lab_en.html" class="uri">https://mchi.mcgill.ca/decision_modeling_lab_en.html</a></p>
+<div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
+</div>
 </div>
 </section>
 
@@ -1073,7 +1062,6 @@ Computational engine: ranger </code></pre>
       Reveal.initialize({
 'controlsAuto': true,
 'previewLinksAuto': false,
-'smaller': false,
 'pdfSeparateFragments': false,
 'autoAnimateEasing': "ease",
 'autoAnimateDuration': 1,
@@ -1328,18 +1316,7 @@ Computational engine: ranger </code></pre>
         }
         return false;
       }
-      const clipboard = new window.ClipboardJS('.code-copy-button', {
-        text: function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-        }
-      });
-      clipboard.on('success', function(e) {
+      const onCopySuccess = function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -1371,11 +1348,50 @@ Computational engine: ranger </code></pre>
         }, 1000);
         // clear code selection
         e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
       });
-      function tippyHover(el, contentFn) {
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        // For code content inside modals, clipBoardJS needs to be initialized with a container option
+        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp('/' + window.location.host + '/');
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+          }
+        }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
         const config = {
           allowHTML: true,
-          content: contentFn,
           maxWidth: 500,
           delay: 100,
           arrow: false,
@@ -1385,8 +1401,17 @@ Computational engine: ranger </code></pre>
           interactive: true,
           interactiveBorder: 10,
           theme: 'light-border',
-          placement: 'bottom-start'
+          placement: 'bottom-start',
         };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
           config['offset'] = [0,0];
           config['maxWidth'] = 700;
         window.tippy(el, config); 
@@ -1400,7 +1425,11 @@ Computational engine: ranger </code></pre>
           try { href = new URL(href).hash; } catch {}
           const id = href.replace(/^#\/?/, "");
           const note = window.document.getElementById(id);
-          return note.innerHTML;
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
         });
       }
       const findCites = (el) => {

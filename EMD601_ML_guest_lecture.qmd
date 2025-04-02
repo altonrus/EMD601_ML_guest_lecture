@@ -2,7 +2,7 @@
 title: "Supervised ML in clinical applications"
 subtitle: "EXMD 601 McGill University"
 author: "Alton Russell"
-date: "27 March 2024"
+date: "2 April 2025"
 format: revealjs
 editor: visual
 ---
@@ -24,7 +24,6 @@ theme_set(theme_bw())
 
 -   **Types of supervised learning**
 -   Model development and selection
--   Clinically useful models
 
 ## Supervised learning in a nutshell
 
@@ -37,9 +36,9 @@ theme_set(theme_bw())
 
 ![](stroke_neural_net_example.png)
 
-## ML vs. statistical models
+## ML (vs. statistical models)
 
-::: columns
+::::: columns
 ::: {.column width="60%"}
 -   Learn relationship between variables from data (not pre-specified)
 
@@ -49,17 +48,17 @@ theme_set(theme_bw())
 
 -   Fewer theoretical guarantees
 
--   Generally, not suited for answering causal questions
+-   Not suited for answering causal questions "out of the box"
 :::
 
 ::: {.column width="40%"}
 ![](XKCD_ml.png)
 :::
-:::
+:::::
 
 ## Regression
 
-::: columns
+::::: columns
 ::: {.column width="50%"}
 -   Predict a **continuous** value (hemoglobin level, length of stay)
 
@@ -69,11 +68,11 @@ theme_set(theme_bw())
 ::: {.column width="50%"}
 ![](regression_example.png)
 :::
-:::
+:::::
 
 ## "Classification" or risk prediction
 
-::: columns
+::::: columns
 ::: {.column width="55%"}
 -   Predict a **categorical** outcome/event (death, recurrence, rehospitalization)
 
@@ -85,7 +84,7 @@ theme_set(theme_bw())
 ::: {.column width="45%"}
 ![](classification_plot.png)
 :::
-:::
+:::::
 
 ## Classifying vs. predicting risk
 
@@ -96,7 +95,7 @@ theme_set(theme_bw())
 
 -   Estimated risk \>\> strict classification
 
-    -   51% vs. 99% chance of pneumonia can have very different clinical implications
+    -   51% vs. 99% chance of pneumonia has very different clinical implications!
 
     -   [**Always**]{.underline} question classification models that don't provide ***probabilistic*** estimates
 
@@ -104,11 +103,11 @@ theme_set(theme_bw())
 
 ![](pdp-cervical-2d.jpeg)
 
-[Interpretable Machine Learning by Molnar](https://christophm.github.io/interpretable-ml-book/) (partial dependency plot showing probability of cervical cancer given the interactino between age and number of pregnancies)
+[Interpretable Machine Learning by Molnar](https://christophm.github.io/interpretable-ml-book/) (partial dependency plot showing probability of cervical cancer given interaction between age and number of pregnancies)
 
 ## Computer vision
 
-::: columns
+::::: columns
 ::: {.column width="50%"}
 -   Analyze pixel data
 
@@ -126,23 +125,23 @@ theme_set(theme_bw())
 
 [Kundu et. al. 2021](https://doi.org/10.1371/journal.pone.0256630)
 :::
-:::
+:::::
 
 ## Generative AI/Large language models
 
-::: columns
-::: {.column width="70%"}
+::::: columns
+::: {.column width="60%"}
 ![](LLM_model_tuning.png)
 :::
 
-::: {.column width="30%"}
--   Trained to mimic human text.
+::: {.column width="40%"}
+-   Trained to mimic patterns in human text by predicting the next word
 
 -   Prone to bias and can 'hallucinate'!
 
--   Can save time with vetting by expert
+-   Can improve clincal workflows, but require vetting by expert
 :::
-:::
+:::::
 
 [Thirunavukarasu et. al. Nature Medicine 2023](https://doi.org/10.1038/s41591-023-02448-8)
 
@@ -150,17 +149,16 @@ theme_set(theme_bw())
 
 -   Types of supervised learning
 -   **Model development and selection**
--   Clinically useful models
 
 ## Our example data[^1]
 
 [^1]: Dataset: [Fetal health classification on Kaggle](https://www.kaggle.com/datasets/andrewmvd/fetal-health-classification). Images: [Thinkstock](https://www.babycenter.in/x1045384/what-is-cardiotocography-ctg-and-why-do-i-need-it); [geekymedics.com](https://geekymedics.com/how-to-read-a-ctg/)
 
-Tabular data derived from **cardiotocography (CTGs)** from 2126 pregnant patients.
+Tabular data derived from **cardiotocography (CTGs)** from 2,126 pregnant patients.
 
-Outcome: fetal health is normal vs. suspect, or pathological.
+Outcome: fetal health is normal vs. abnormal
 
-::: columns
+::::: columns
 ::: {.column width="50%"}
 ![](CTG_device.jpeg)
 :::
@@ -168,7 +166,7 @@ Outcome: fetal health is normal vs. suspect, or pathological.
 ::: {.column width="50%"}
 ![](CTG_output.jpeg)
 :::
-:::
+:::::
 
 ## Our example data
 
@@ -192,7 +190,7 @@ str(dt)
 
 -   Use the remaining data to train model
 
--   At the [**very end**]{.underline}, run [**only one**]{.underline} [**final model**]{.underline} on the test set for an unbiased estimate of performance
+-   At the [**very end**]{.underline}, run [**one**]{.underline} [**final model**]{.underline} on the test set for an unbiased estimate of performance
 
 ![](train_test_split.png)
 
@@ -212,14 +210,14 @@ table(testing(ctg_split)$fetal_health)/nrow(testing(ctg_split))
 
 ## Stratifying data split
 
-Stratifying is easy and ensures data in each split are representative
+Stratifying is easy and ensures data in each split are representative on the outcome (or other variables)
 
 ```{r}
 #| echo: true
 
 #Split while stratifying on outcome
 set.seed(456)
-ctg_split_strat <- initial_split(dt, prop = 0.8 ,strata = fetal_health)
+ctg_split_strat <- initial_split(dt, prop = 0.8, strata = fetal_health)
 
 #Distribution of outcome in training sets
 table(training(ctg_split_strat)$fetal_health)/nrow(training(ctg_split_strat))
@@ -229,7 +227,7 @@ table(testing(ctg_split_strat)$fetal_health)/nrow(testing(ctg_split_strat))
 
 ## Model selection
 
--   If trying just one model configuration, use full training data
+-   If trying just one model configuration, can use full training data
 
 -   Usually, want to select best model from several **configurations** (algorithm + hyperparameters)
 
@@ -237,7 +235,7 @@ table(testing(ctg_split_strat)$fetal_health)/nrow(testing(ctg_split_strat))
 
     -   Hyperparameter: 'setting' of that model (e.g., minimum node size)
 
--   Further steps needed to avoid biased model selection in training data
+-   Further steps needed to avoid [**biased model selection**]{.underline} in training data
 
 ## Cross validation
 
@@ -255,16 +253,15 @@ Randomly assign each example to a 'fold'
 
 ## Cross validation
 
-::: columns
+::::: columns
 ::: {.column width="75%"}
-
 ![](three-CV-iter.svg)
 :::
 
 ::: {.column width="25%"}
 Select model with the best **average** performance across each CV fold
 :::
-:::
+:::::
 
 [workshops.tidymodels.org](https://workshops.tidymodels.org)
 
@@ -282,7 +279,7 @@ ctg_folds <- vfold_cv(training(ctg_split_strat),
 ctg_folds
 ```
 
-## Evaluating models
+## Evaluating models' predictive performance
 
 -   Performance metrics identify how 'good' the model is for given dataset
 
@@ -292,9 +289,9 @@ ctg_folds
 
 -   Metrics differ for regression vs. classification
 
-## Regression metrics
+## Error metrics for regression
 
-::: columns
+::::: columns
 ::: {.column width="50%"}
 For each example, error is difference between actual outcome $y$ and predicted outcome $\hat{y}$
 
@@ -306,11 +303,11 @@ For each example, error is difference between actual outcome $y$ and predicted o
 ::: {.column width="50%"}
 ![](rmse_vs_mae.webp)
 :::
-:::
+:::::
 
 ## Classification metrics: confusion matrix-based
 
-::: columns
+::::: columns
 ::: {.column width="65%"}
 **After dichotomizing predicted risk**, you can create a confusion matrix
 
@@ -328,17 +325,16 @@ Many metrics derived from it
 
 [Harikrishnan N B Medium](https://medium.com/analytics-vidhya/confusion-matrix-accuracy-precision-recall-f1-score-ade299cf63cd#:~:text=What%20is%20the%20accuracy%20of,the%20accuracy%20will%20be%2085%25.)
 :::
-:::
+:::::
 
-::: callout-caution
-## Often, we do not want to dichotomize before selecting a model
-:::
+Often, we do not want to dichotomize before selecting a model
+
 
 ## Area under the ROC curve
 
-::: columns
+::::: columns
 ::: {.column width="60%"}
-Measure of **discrimination**: Higher if the examples with a positive outcome were assigned a higher risk score
+Measure of **discrimination**: Higher if the examples with a positive outcome tended to have higher risk scores than negative examples
 
 -   -,-,-,-,-,+,+,+,+ $\rightarrow$ AUC=1 (perfectly discriminated +'s from -'s)
 
@@ -348,7 +344,7 @@ Measure of **discrimination**: Higher if the examples with a positive outcome we
 ::: {.column width="40%"}
 ![](ROC_curve.png)
 :::
-:::
+:::::
 
 Does not measure **calibration** (how closely the predicted probabilities match actual risk)
 
@@ -360,7 +356,7 @@ Does not measure **calibration** (how closely the predicted probabilities match 
 
 -   Top model performance on **validation data** (e.g., cross validation folds) can still be optimistic if many configurations assessed
 
-    -   Use for selection only
+    -   Use for [**selection**]{.underline}
 
 -   Performance on [**test data**]{.underline} only unbiased measure of performance
 
@@ -417,7 +413,7 @@ rf_tune_spec
 #| echo: true
 #Create grid of hyperparameters for tuning
 rf_grid <- grid_regular(
-  mtry(range = c(5, 15)),#number of predictors sampled at each split of tree
+  mtry(range = c(5, 15)),#number of predictors sampled at each split
   min_n(range = c(2, 8)),#Minimum datapoints in node for further split
   levels = 3
 )
@@ -431,16 +427,16 @@ rf_grid
 # Tune the model
 set.seed(456)
 rf_tune_results <- tune_grid(
-  rf_tune_spec,
-  ctg_recipe,
-  resamples = ctg_folds,
-  grid = rf_grid
+  rf_tune_spec, # tuning specification I made
+  ctg_recipe, # "recipe" I defined
+  resamples = ctg_folds, # data split for cross validation
+  grid = rf_grid # hyperparameters to try
 )
 ```
 
 -   2 repeats of 3 fold cross validation
 
--   Grid search \[5,10,15\] as \# randomly-selected predictors at each branch and \[2, 5, 8\] as minimum node size
+-   Grid search \[5,10,15\] as \# randomly-selected predictors at each split and \[2, 5, 8\] as minimum node size
 
 How many random forest models will we train before selecting the top model?
 
@@ -465,7 +461,7 @@ rf_best_spec <- rand_forest(mtry = best_auc$mtry,
                        mode = "classification") |>
   set_engine("ranger", importance = "impurity")
 
-#Trains top configuration on all training set; predict on test set
+#Train top configuration on full training set; predict on test set
 rf_test_results <- last_fit(
   rf_best_spec,
   ctg_recipe,
@@ -487,7 +483,7 @@ head(dt_pred_outcome,5)
 
 ## Plot the ROC curve
 
-::: columns
+::::: columns
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
@@ -507,7 +503,7 @@ head(roc, 9)
 autoplot(roc)
 ```
 :::
-:::
+:::::
 
 ## Assess calibration
 
@@ -519,7 +515,7 @@ calibration_obj <- caret::calibration(truth ~ .pred_Abnormal,
 ggplot(calibration_obj)
 ```
 
-::: columns
+::::: columns
 ::: {.column width="60%"}
 ```{r}
 #| echo: false
@@ -533,7 +529,7 @@ ggplot(calibration_obj)
 
 -   Interpretation: risk predictions above \~12% may be overestimates
 :::
-:::
+:::::
 
 ## Plot variable importance
 
@@ -547,18 +543,22 @@ rf_test_results |>
 
 ## Model development takeaways
 
--   Separates training, validation/comparison/selection, and testing to avoid over-/under-fitting
+-   Separate data sub-sets for training, validation/comparison/selection, and testing to avoid over-/under-fitting
 
 -   Unbiased performance estimate comes from test data not used for training or selection
 
--   In most applied projects, rigorous model development \>\>\> in-depth understanding of algorithms
+-   In most applied projects, rigorous model development \>\>\> in-depth understanding of ML algorithms
 
-## Agenda
+## Bonus material
 
--   Types of supervised learning
--   Model development and selection
--   **Clinically useful models**
-
-## Switching to Powerpoint
+Clinically useful supervised learning ML models, in powerpoint
 
 <https://github.com/altonrus/EMD601_ML_guest_lecture/blob/master/clinically_useful_ML_prediction.pptx>
+
+## Thank you
+
+Alton Russell
+
+alton.russell\@mcgill.ca
+
+<https://mchi.mcgill.ca/decision_modeling_lab_en.html>
